@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table class="tabela-resultado megasena">
+   <thead>
+      <tr>
+         <th>
+            <small>Concurso</small>
+         </th>
+         <th>
+            <small>Data do Sorteio</small>
+         </th>
+         <th>
+            <small>Coluna1</small>
+         </th>
+         <th>
+            <small>Coluna2</small>
+         </th>
+         <th>
+            <small>Coluna3</small>
+         </th>
+         <th>
+            <small>Coluna4</small>
+         </th>
+         <th>
+            <small>Coluna5</small>
+         </th>
+         <th>
+            <small>Coluna6</small>
+         </th>
+         <th>
+            <small>Ganhadores Faixa 1</small>
+         </th>
+         <th>
+            <small>Ganhadores Faixa 2</small>
+         </th>
+         <th>
+            <small>Ganhadores Faixa 3</small>
+         </th>
+         <th>
+            <small>Rateio Faixa 1</small>
+         </th>
+         <th>
+            <small>Rateio Faixa2</small>
+         </th>
+         <th>
+            <small>Rateio Faixa 3</small>
+         </th>
+         <th>
+            <small>Cidade</small>
+         </th>
+         <th>
+            <small>Valor Arrecadado</small>
+         </th>
+         <th>
+            <small>Estimativa para o próximo concurso</small>
+         </th>
+         <th>
+            <small>Valor Acumulado Próximo Concurso</small>
+         </th>
+         <th>
+            <small>Acumulado</small>
+         </th>
+         <th>
+            <small>Sorteio Especial</small>
+         </th>
+         <th>
+            <small>Observação</small>
+         </th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr>
+         <td>1</td>
+         <td>11/03/1996</td>
+         <td>004</td>
+         <td>005</td>
+         <td>030</td>
+         <td>033</td>
+         <td>041</td>
+         <td>052</td>
+         <td>0</td>
+         <td>17</td>
+         <td>2016</td>
+         <td>R$0,00</td>
+         <td>R$39.158,92</td>
+         <td>R$330,21</td>
+         <td>
+            <table>
+               <tbody />
+            </table>
+         </td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>R$1.714.650,23</td>
+         <td>Sim</td>
+         <td>Não</td>
+         <td />
+      </tr>
+   </tbody>
+   <tbody>
+      <tr>
+         <td>2</td>
+         <td>18/03/1996</td>
+         <td>009</td>
+         <td>037</td>
+         <td>039</td>
+         <td>041</td>
+         <td>043</td>
+         <td>049</td>
+         <td>1</td>
+         <td>65</td>
+         <td>4488</td>
+         <td>R$2.307.162,23</td>
+         <td>R$14.424,02</td>
+         <td>R$208,91</td>
+         <td>
+            <table>
+               <tbody>
+                  <tr>
+                     <td />
+                     <td>PR</td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>Não</td>
+         <td>Não</td>
+         <td />
+      </tr>
+   </tbody>
+   <tbody>
+      <tr>
+         <td>3</td>
+         <td>25/03/1996</td>
+         <td>010</td>
+         <td>011</td>
+         <td>029</td>
+         <td>030</td>
+         <td>036</td>
+         <td>047</td>
+         <td>2</td>
+         <td>62</td>
+         <td>4261</td>
+         <td>R$391.192,51</td>
+         <td>R$10.515,93</td>
+         <td>R$153,01</td>
+         <td>
+            <table>
+               <tbody>
+                  <tr>
+                     <td />
+                     <td>RN</td>
+                  </tr>
+                  <tr>
+                     <td />
+                     <td>SP</td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>Não</td>
+         <td>Não</td>
+         <td />
+      </tr>
+   </tbody>
+   <tbody>
+      <tr>
+         <td>4</td>
+         <td>01/04/1996</td>
+         <td>001</td>
+         <td>005</td>
+         <td>006</td>
+         <td>027</td>
+         <td>042</td>
+         <td>059</td>
+         <td>0</td>
+         <td>39</td>
+         <td>3311</td>
+         <td>R$0,00</td>
+         <td>R$15.322,24</td>
+         <td>R$180,48</td>
+         <td>
+            <table>
+               <tbody />
+            </table>
+         </td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>R$717.080,75</td>
+         <td>Sim</td>
+         <td>Não</td>
+         <td />
+      </tr>
+   </tbody>
+   <tbody>
+      <tr>
+         <td>5</td>
+         <td>08/04/1996</td>
+         <td>001</td>
+         <td>002</td>
+         <td>006</td>
+         <td>016</td>
+         <td>019</td>
+         <td>046</td>
+         <td>0</td>
+         <td>98</td>
+         <td>5399</td>
+         <td>R$0,00</td>
+         <td>R$5.318,10</td>
+         <td>R$96,53</td>
+         <td>
+            <table>
+               <tbody />
+            </table>
+         </td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>R$1.342.488,85</td>
+         <td>Sim</td>
+         <td>Não</td>
+         <td />
+      </tr>
+   </tbody>
+   <tbody>
+      <tr>
+         <td>6</td>
+         <td>15/04/1996</td>
+         <td>001</td>
+         <td>013</td>
+         <td>019</td>
+         <td>022</td>
+         <td>040</td>
+         <td>047</td>
+         <td>0</td>
+         <td>109</td>
+         <td>7147</td>
+         <td>R$0,00</td>
+         <td>R$7.214,66</td>
+         <td>R$110,03</td>
+         <td>
+            <table>
+               <tbody />
+            </table>
+         </td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>R$2.286.166,33</td>
+         <td>Sim</td>
+         <td>Não</td>
+         <td />
+      </tr>
+   </tbody>
+   <tbody>
+      <tr>
+         <td>7</td>
+         <td>22/04/1996</td>
+         <td>001</td>
+         <td>005</td>
+         <td>020</td>
+         <td>021</td>
+         <td>038</td>
+         <td>056</td>
+         <td>0</td>
+         <td>100</td>
+         <td>5736</td>
+         <td>R$0,00</td>
+         <td>R$8.746,05</td>
+         <td>R$152,48</td>
+         <td>
+            <table>
+               <tbody />
+            </table>
+         </td>
+         <td>R$0,00</td>
+         <td>R$0,00</td>
+         <td>R$3.335.692,28</td>
+         <td>Sim</td>
+         <td>Não</td>
+         <td />
+      </tr>
+   </tbody>
+
+   </tbody>
