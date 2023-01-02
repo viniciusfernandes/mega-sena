@@ -5,6 +5,26 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EstatisticaDinamica {
+
+    public static List<int[]> gerarApostasAleatorias(int totalApostas) {
+        var apostas = new ArrayList<int[]>();
+        int[] aposta = null;
+        boolean ok = false;
+        int j = 0;
+        for (int i = 0; i < totalApostas; i++) {
+            aposta = new int[6];
+            j = 0;
+            do {
+                aposta[j] = (int) Math.ceil(Math.random() * 61);
+                j++;
+                ok = j > 5;
+            } while (!ok);
+            Arrays.sort(aposta);
+            apostas.add(aposta);
+        }
+        return apostas;
+    }
+
     public static int[] gerarUltimoBlocoFrequenciaSorteios(List<int[]> sorteios, int tamanhoBloco) {
         var frequencias = gerarFrequenciaSorteios(sorteios, tamanhoBloco);
         return frequencias.get(frequencias.size() - 1);

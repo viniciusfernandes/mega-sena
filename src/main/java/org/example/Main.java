@@ -3,60 +3,68 @@ package org.example;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.example.EstatisticaDinamica.gerarFrequenciaSorteios;
-import static org.example.EstatisticaDinamica.printFrequenciaNumerosSorteados;
+import java.util.*;
 
 public class Main {
     private static List<int[]> sorteiosAnteriores = new ArrayList<>();
     private static int TAMANHO_BLOCCO_FREQUENCIA = 15;
+
     public static void main(String[] args) throws IOException {
-        conferir(17, 18, 20, 37, 45, 53);
+        conferir(4, 5, 10, 34, 58, 59);
+/*
         lerSorteiosAnteriores();
-        //imprimirJogosAnteriores();
+        //Utils.printSorteiosAnteriores(sorteiosAnteriores);
         var apostas = lerApostas();
-        verificarExistenciaResultadosAnteriores(apostas);
-
+        validarApostas(apostas);
+        Utils.print("APOSTAS", apostas);
         int[] frequenciaSorteios = EstatisticaDinamica.gerarUltimoBlocoFrequenciaSorteios(sorteiosAnteriores, TAMANHO_BLOCCO_FREQUENCIA);
-        Utils.printFrequenciaAposta(frequenciaSorteios, apostas);
-        EstatisticaDinamica.numeroComFrequenciaBaixa(frequenciaSorteios, 30);
-        //  List<int[]> blocoFrequenciaSorteios = gerarFrequenciaSorteios(sorteiosAnteriores, TAMANHO_BLOCCO_FREQUENCIA);
-        //printFrequenciaNumerosSorteados(sorteiosAnteriores, blocoFrequenciaSorteios, TAMANHO_BLOCCO_FREQUENCIA);
+        //Utils.printFrequenciaAposta(frequenciaSorteios, apostas);
+        EstatisticaDinamica.numeroComFrequenciaBaixa(frequenciaSorteios, 4);
+        */
     }
 
-    private static void imprimirJogosAnteriores() {
-        for (var jogo : sorteiosAnteriores) {
-            System.out.println(Utils.stringfy(jogo));
-        }
-    }
-
-    private static void verificarExistenciaResultadosAnteriores(List<int[]> apostas) {
+    private static void validarApostas(List<int[]> apostas) {
+        var apostasRepetidas = new HashSet<String>();
         String idAposta;
         for (var aposta : apostas) {
             idAposta = Utils.stringfy(aposta);
             if (sorteiosAnteriores.contains(idAposta)) {
-                throw new IllegalArgumentException("O aposta [" + idAposta + "] já existe em resultados anteriores");
+                throw new IllegalArgumentException("A aposta [" + idAposta + "] já existe em resultados anteriores");
+            }
+            if (apostasRepetidas.contains(idAposta)) {
+                throw new IllegalArgumentException("A aposta [" + idAposta + "] esta repetida");
+            } else {
+                apostasRepetidas.add(idAposta);
             }
         }
         System.out.println("TODOS OS JOGOS ESTÃO OK!");
     }
+
 
     private static List<int[]> lerApostas() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("/home/vinicius/Projects/mega-sena/src/main/java/org/example/apostas.txt"));
         String line = null;
         var apostas = new ArrayList<int[]>();
         String[] numeros;
+        int lineNum = 0;
         while ((line = reader.readLine()) != null) {
-            numeros = line.split(" ");
-            var aposta = new int[6];
-            for (int i = 0; i < numeros.length; i++) {
-                aposta[i] = Integer.parseInt(numeros[i]);
+            lineNum++;
+            try {
+                if (line.isEmpty() || line.isBlank() || (line.charAt(0) < '0' || line.charAt(0) > '9')) {
+                    continue;
+                }
+                numeros = line.split(" ");
+                var aposta = new int[6];
+                for (int i = 0; i < numeros.length; i++) {
+                    aposta[i] = Integer.parseInt(numeros[i]);
+                }
+                Arrays.sort(aposta);
+                apostas.add(aposta);
+            } catch (Exception e) {
+                System.err.println("Falha na linha " + lineNum + " => " + line);
+                e.printStackTrace();
+                throw e;
             }
-            Arrays.sort(aposta);
-            apostas.add(aposta);
         }
         reader.close();
         return apostas;
@@ -88,6 +96,7 @@ public class Main {
 
     private static void conferir(int... sorteados) throws IOException {
         List<int[]> apostas = lerApostas();
+        var premiados = new HashMap<String, List<String>>();
         int acertos = 0;
         for (var aposta : apostas) {
             acertos = 0;
@@ -100,18 +109,29 @@ public class Main {
                 }
             }
             if (acertos == 4) {
-                System.out.println("QUADRA para " + Utils.stringfy(aposta));
-                System.out.println(Utils.stringfy(aposta) + " =>  Quadra!");
+                addPermiado("quadra", aposta, premiados);
             } else if (acertos == 5) {
-                System.out.println("QUINA para " + Utils.stringfy(aposta));
-                System.out.println(Utils.stringfy(aposta) + " =>  Quina!");
+                addPermiado("quina", aposta, premiados);
             } else if (acertos >= 6) {
-                System.out.println(Utils.stringfy(aposta) + " =>  GANHOU!");
-            } else {
-                System.out.println(Utils.stringfy(aposta) + " =>  " + acertos + " acertos");
+                addPermiado("sextina", aposta, premiados);
             }
+            System.out.println(Utils.stringfy(aposta) + " =>  " + acertos + " acertos");
         }
+        premiados.forEach((premiacao, listaPremiados) -> {
+            System.out.println("******" + premiacao + "******");
+            for (var premiado : listaPremiados) {
+                System.out.println(premiado);
+            }
+        });
     }
 
+    private static void addPermiado(String premiacao, int[] aposta, HashMap<String, List<String>> premiados) {
+        var premiado = premiados.get(premiacao);
+        if (premiado == null) {
+            premiado = new ArrayList<>();
+            premiados.put(premiacao, premiado);
+        }
+        premiado.add(Utils.stringfy(aposta));
+    }
 
 }

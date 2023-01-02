@@ -63,4 +63,16 @@ public class Utils {
         s.append("**********************\n");
         System.out.println(s);
     }
+
+    public static void print(String titulo, List<int[]> sorteios) {
+        StringBuilder sorteiosString = new StringBuilder();
+        for (var jogo : sorteios) {
+            sorteiosString.append(Utils.stringfy(jogo)).append("\n");
+        }
+        print(titulo, sorteiosString);
+    }
+
+    public static void printSorteiosAnteriores(List<int[]> sorteios) {
+        print("SORTEIOS ANTERIORES", sorteios);
+    }
 }
