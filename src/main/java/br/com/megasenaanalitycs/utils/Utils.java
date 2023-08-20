@@ -1,4 +1,4 @@
-package org.example;
+package br.com.megasenaanalitycs.utils;
 
 import java.util.List;
 
@@ -55,12 +55,13 @@ public class Utils {
     }
 
     public static void print(String titulo, StringBuilder resultados) {
+        final  var stars = "********************************\n";
         StringBuilder s = new StringBuilder();
-        s.append("**********************\n");
+        s.append(stars);
         s.append(titulo).append("\n");
-        s.append("**********************\n");
+        s.append(stars);
         s.append(resultados);
-        s.append("**********************\n");
+        s.append(stars);
         System.out.println(s);
     }
 

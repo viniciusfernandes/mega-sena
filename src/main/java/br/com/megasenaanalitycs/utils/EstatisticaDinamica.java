@@ -1,4 +1,4 @@
-package org.example;
+package br.com.megasenaanalitycs.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,17 +31,46 @@ public class EstatisticaDinamica {
     }
 
 
-    public static int[] numeroComFrequenciaBaixa(int[] frequencias, int frequenciaLimite) {
-        var numeros = new ArrayList<Integer>();
-        var saida = new StringBuilder();
+    public static void printPorFrequenciaMaxima(int[] frequencias, int frequenciaLimite) {
+        var freq = new StringBuilder();
+        var num = new StringBuilder();
         for (int i = 0; i < frequencias.length; i++) {
             if (frequencias[i] <= frequenciaLimite) {
-                numeros.add(i + 1);
-                saida.append((i + 1) + "=" + frequencias[i]).append("\n");
+                num.append(i + 1 <= 9 ? "0" + (i + 1) : i + 1).append(" ");
+                freq.append(frequencias[i] <= 9 ? "0" + frequencias[i] : frequencias[i]).append(" ");
             }
         }
-        Utils.print("Numeros Baixa Frequencia", saida);
-        return null;
+        num.append("\n").append(freq).append("\n");
+        Utils.print("Frequência dos Números Sorteados", num);
+    }
+
+    public static void printNumeroPorFrequencia(int[] frequencias) {
+        printPorFrequenciaMaxima(frequencias, 1000);
+    }
+
+    public static void printFrequenciaPorSorteio(List<int[]> sorteios, List<int[]> frequencias) {
+        var num = new StringBuilder();
+        var freq = new StringBuilder();
+        var size = 40;
+        sorteios = sorteios.subList(sorteios.size() - size, sorteios.size());
+        frequencias = frequencias.subList(frequencias.size() - size, frequencias.size());
+        int[] sorteio;
+        int[] frequencia;
+        int k;
+        int i = size;
+        while (--i > 0) {
+            sorteio = sorteios.get(i);
+            frequencia = frequencias.get(i - 1);
+            for (int j = 0; j < sorteio.length; j++) {
+                num.append(sorteio[j] <= 9 ? "0" + sorteio[j] : sorteio[j]).append(" ");
+                k = sorteio[j] - 1;
+                freq.append(frequencia[k] <= 9 ? "0" + frequencia[k] : frequencia[k]).append(" ");
+            }
+            freq.append("\n");
+            num.append("\n").append(freq).append("\n");
+            freq.delete(0, freq.length());
+        }
+        Utils.print("Frequência dos Últimos Sorteios", num);
     }
 
     public static List<int[]> gerarFrequenciaSorteios(List<int[]> sorteios, int tamanhoBloco) {
@@ -58,9 +87,9 @@ public class EstatisticaDinamica {
             blocoSorteios = sorteios.subList(idxBloco, idxBloco + tamanhoBloco);
             frequencia = new int[60];
 
-            for (int[] jogo : blocoSorteios) {
-                for (int i = 0; i < jogo.length; i++) {
-                    idx = jogo[i] - 1;
+            for (int[] sorteio : blocoSorteios) {
+                for (int i = 0; i < sorteio.length; i++) {
+                    idx = sorteio[i] - 1;
                     frequencia[idx]++;
                 }
             }
@@ -69,7 +98,7 @@ public class EstatisticaDinamica {
             Utils.stringfy(frequencia, saida);
             saida.append("\n");
         }
-        // Utils.print("Frequencia dos Sorteios", saida);
+        Utils.print("Frequencia dos Sorteios", saida);
         return frequencias;
     }
 

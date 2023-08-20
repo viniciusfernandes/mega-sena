@@ -1,15 +1,25 @@
-package org.example;
+package br.com.megasenaanalitycs;
+
+import br.com.megasenaanalitycs.integracao.SorteiosReader;
+import br.com.megasenaanalitycs.utils.EstatisticaDinamica;
+import br.com.megasenaanalitycs.utils.Utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 public class Main {
-    private static List<int[]> sorteiosAnteriores = new ArrayList<>();
-    private static int TAMANHO_BLOCCO_FREQUENCIA = 15;
+    private static List<int[]> sorteios = new ArrayList<>();
+    private static int TAMANHO_BLOCCO_FREQUENCIA = 24;
 
     public static void main(String[] args) throws IOException {
+        sorteios = SorteiosReader.lerSorteiosAnteriores(new File("src/main/resources/megasena.xlsx"));
         conferir(4, 5, 10, 34, 58, 59);
 /*
         lerSorteiosAnteriores();
@@ -21,6 +31,11 @@ public class Main {
         //Utils.printFrequenciaAposta(frequenciaSorteios, apostas);
         EstatisticaDinamica.numeroComFrequenciaBaixa(frequenciaSorteios, 4);
         */
+        var frequenciaSorteios = EstatisticaDinamica.gerarUltimoBlocoFrequenciaSorteios(sorteios, TAMANHO_BLOCCO_FREQUENCIA);
+        EstatisticaDinamica.printNumeroPorFrequencia(frequenciaSorteios);
+
+        var frequencias = EstatisticaDinamica.gerarFrequenciaSorteios(sorteios, TAMANHO_BLOCCO_FREQUENCIA);
+        EstatisticaDinamica.printFrequenciaPorSorteio(sorteios, frequencias);
     }
 
     private static void validarApostas(List<int[]> apostas) {
@@ -28,7 +43,7 @@ public class Main {
         String idAposta;
         for (var aposta : apostas) {
             idAposta = Utils.stringfy(aposta);
-            if (sorteiosAnteriores.contains(idAposta)) {
+            if (sorteios.contains(idAposta)) {
                 throw new IllegalArgumentException("A aposta [" + idAposta + "] já existe em resultados anteriores");
             }
             if (apostasRepetidas.contains(idAposta)) {
@@ -42,7 +57,7 @@ public class Main {
 
 
     private static List<int[]> lerApostas() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("/home/vinicius/Projects/mega-sena/src/main/java/org/example/apostas.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/apostas.txt"));
         String line = null;
         var apostas = new ArrayList<int[]>();
         String[] numeros;
@@ -70,29 +85,6 @@ public class Main {
         return apostas;
     }
 
-    private static void lerSorteiosAnteriores() throws IOException {
-        String fileName = "/home/vinicius/Projects/mega-sena/src/main/java/org/example/tabela-jogos-anteriores.xml";
-        BufferedReader reader = new BufferedReader(new FileReader(fileName));
-        String line = null;
-        String numero;
-        int[] sorteio;
-
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (line.matches("<td>\\d{2}/\\d{2}/\\d{4}</td>")) {
-                sorteio = new int[6];
-                for (int i = 0; i < 6; i++) {
-                    line = reader.readLine();
-                    line = line.trim();
-                    line = line.replace("<td>", "").replace("</td>", "");
-                    numero = line.substring(1);
-                    sorteio[i] = Integer.parseInt(numero);
-                }
-                sorteiosAnteriores.add(sorteio);
-            }
-        }
-        reader.close();
-    }
 
     private static void conferir(int... sorteados) throws IOException {
         List<int[]> apostas = lerApostas();
