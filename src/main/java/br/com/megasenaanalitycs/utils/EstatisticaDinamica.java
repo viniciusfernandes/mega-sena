@@ -2,6 +2,7 @@ package br.com.megasenaanalitycs.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class EstatisticaDinamica {

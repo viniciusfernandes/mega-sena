@@ -66,11 +66,11 @@ public class Utils {
     }
 
     public static void print(String titulo, List<int[]> sorteios) {
-        StringBuilder sorteiosString = new StringBuilder();
+        StringBuilder appender = new StringBuilder();
         for (var jogo : sorteios) {
-            sorteiosString.append(Utils.stringfy(jogo)).append("\n");
+            appender.append(Utils.stringfy(jogo)).append("\n");
         }
-        print(titulo, sorteiosString);
+        print(titulo, appender);
     }
 
     public static void printSorteiosAnteriores(List<int[]> sorteios) {
