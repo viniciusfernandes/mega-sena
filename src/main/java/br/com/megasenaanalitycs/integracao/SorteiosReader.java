@@ -32,6 +32,9 @@ public class SorteiosReader {
                 int[] jogo = new int[tipoJogo.numeros];
                 for (int col = 0; col < tipoJogo.numeros; col++) {
                     jogo[col] = (int) row.getCell(shift + col).getNumericCellValue();
+                    if (tipoJogo == TipoJogo.LOTOMANIA && jogo[col] == 0) {
+                        jogo[col] = 100;
+                    }
                 }
 
                 line++;
@@ -43,7 +46,7 @@ public class SorteiosReader {
         return jogos;
     }
 
-    public static List<int[]> lerApostas(TipoJogo tipoJogo,File file) throws IOException {
+    public static List<int[]> lerApostas(TipoJogo tipoJogo, File file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = null;
         var apostas = new ArrayList<int[]>();

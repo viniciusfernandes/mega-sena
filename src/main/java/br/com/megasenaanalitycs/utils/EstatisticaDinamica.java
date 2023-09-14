@@ -1,5 +1,7 @@
 package br.com.megasenaanalitycs.utils;
 
+import br.com.megasenaanalitycs.integracao.TipoJogo;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,8 +28,8 @@ public class EstatisticaDinamica {
         return apostas;
     }
 
-    public static int[] gerarUltimoBlocoFrequenciaSorteios(List<int[]> sorteios, int tamanhoBloco) {
-        var frequencias = gerarFrequenciaSorteios(sorteios, tamanhoBloco);
+    public static int[] gerarUltimoBlocoFrequenciaSorteios(TipoJogo tipoJogo, List<int[]> sorteios, int tamanhoBloco) {
+        var frequencias = gerarFrequenciaSorteios(tipoJogo, sorteios, tamanhoBloco);
         return frequencias.get(frequencias.size() - 1);
     }
 
@@ -74,7 +76,7 @@ public class EstatisticaDinamica {
         Utils.print("Frequência dos Últimos Sorteios", num);
     }
 
-    public static List<int[]> gerarFrequenciaSorteios(List<int[]> sorteios, int tamanhoBloco) {
+    public static List<int[]> gerarFrequenciaSorteios(TipoJogo tipoJogo, List<int[]> sorteios, int tamanhoBloco) {
         if (tamanhoBloco > sorteios.size()) {
             tamanhoBloco = sorteios.size();
         }
@@ -86,7 +88,7 @@ public class EstatisticaDinamica {
         StringBuilder saida = new StringBuilder();
         for (int idxBloco = 0; idxBloco <= lastIdx; idxBloco++) {
             blocoSorteios = sorteios.subList(idxBloco, idxBloco + tamanhoBloco);
-            frequencia = new int[60];
+            frequencia = new int[tipoJogo.total];
 
             for (int[] sorteio : blocoSorteios) {
                 for (int i = 0; i < sorteio.length; i++) {
@@ -138,10 +140,10 @@ public class EstatisticaDinamica {
         System.out.println(saida);
     }
 
-    public static void gerarVelocidadesDistribuicoes(List<int[]> distribuicoes) {
+    public static void gerarVelocidadesDistribuicoes(TipoJogo tipoJogo, List<int[]> distribuicoes) {
         int[] distribuicaoAnterior = distribuicoes.get(0);
         int[] distribuicao;
-        int[][] velocidades = new int[60][distribuicoes.size()];
+        int[][] velocidades = new int[tipoJogo.total][distribuicoes.size()];
         int velocidade;
         for (int idxDist = 1; idxDist < distribuicoes.size(); idxDist++) {
             distribuicao = distribuicoes.get(idxDist);

@@ -21,45 +21,61 @@ public class Main {
     private static int TAMANHO_BLOCCO_FREQUENCIA = 24;
 
     public static void main(String[] args) throws IOException {
-        final var sorteiosFile = new File("src/main/resources/megasena.xlsx");
+        File sorteiosFile = null;
         final var apostasFile = new File("src/main/resources/apostas.txt");
         Scanner scanner = new Scanner(System.in);
         String option;
         List<int[]> sorteios;
         List<int[]> frequencias;
-        var tipoJogo = TipoJogo.MEGASENA;
+        TipoJogo tipoJogo = null;
         do {
-            System.out.println("\n*****************");
-            System.out.println("Choose an option:");
-            System.out.println("1- Ler Sorteios Anteriores");
-            System.out.println("2- Conferir Apostas");
-            System.out.println("3- Validar apostas");
-            System.out.println("4- Gerar Frequencia Ultimos Sorteios");
-            System.out.println("5- Gerar Frequencia Todos Sorteios");
-            System.out.println("S- Sair");
-            System.out.println("*****************");
-
-            option = scanner.nextLine();
-
+            if (tipoJogo == null) {
+                option = "1";
+            } else {
+                System.out.println("\n*****************");
+                System.out.println("Escolha uma das opções:");
+                System.out.println("1- Escolha o Tipo de Jogo");
+                System.out.println("2- Ler Sorteios Anteriores");
+                System.out.println("3- Conferir Apostas");
+                System.out.println("4- Validar apostas");
+                System.out.println("5- Gerar Frequencia Ultimos Sorteios");
+                System.out.println("6- Gerar Frequencia Todos Sorteios");
+                System.out.println("S- Sair");
+                System.out.println("*****************");
+                option = scanner.nextLine();
+            }
             switch (option.toUpperCase()) {
-                case "1":
+                case ("1"):
+                    System.out.println("1- Mega Sena");
+                    System.out.println("2- Lotomania");
+                    option = scanner.nextLine();
+                    if ("1".equalsIgnoreCase(option.toUpperCase())) {
+                        tipoJogo = TipoJogo.MEGASENA;
+                    } else {
+                        tipoJogo = TipoJogo.LOTOMANIA;
+                    }
+                    System.out.println("\n*****************");
+                    System.out.println("Você escolheu " + tipoJogo);
+                    sorteiosFile = new File("src/main/resources/" + tipoJogo + ".xlsx");
+                    break;
+                case "2":
                     sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
                     Utils.print("Sorteios Anteriores", sorteios);
                     break;
-                case "2":
+                case "3":
                     conferir(tipoJogo, new int[]{4, 5, 10, 34, 58, 59});
                     break;
-                case "3":
-                    verificarApostas(tipoJogo, sorteiosFile, apostasFile);
-                    break;
                 case "4":
-                    sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
-                    var frequenciaSorteios = EstatisticaDinamica.gerarUltimoBlocoFrequenciaSorteios(sorteios, TAMANHO_BLOCCO_FREQUENCIA);
-                    EstatisticaDinamica.printNumeroPorFrequencia(frequenciaSorteios);
+                    verificarApostas(tipoJogo, sorteiosFile, apostasFile);
                     break;
                 case "5":
                     sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
-                    frequencias = EstatisticaDinamica.gerarFrequenciaSorteios(sorteios, TAMANHO_BLOCCO_FREQUENCIA);
+                    var frequenciaSorteios = EstatisticaDinamica.gerarUltimoBlocoFrequenciaSorteios(tipoJogo, sorteios, TAMANHO_BLOCCO_FREQUENCIA);
+                    EstatisticaDinamica.printNumeroPorFrequencia(frequenciaSorteios);
+                    break;
+                case "6":
+                    sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
+                    frequencias = EstatisticaDinamica.gerarFrequenciaSorteios(tipoJogo, sorteios, TAMANHO_BLOCCO_FREQUENCIA);
                     EstatisticaDinamica.printFrequenciaPorSorteio(sorteios, frequencias);
                     break;
                 case "S":
