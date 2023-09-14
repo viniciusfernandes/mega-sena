@@ -19,22 +19,21 @@ import java.util.List;
 public class SorteiosReader {
     private static Logger logger = LoggerFactory.getLogger(SorteiosReader.class);
 
-    public static List<int[]> lerSorteiosAnteriores(File file) {
+    public static List<int[]> lerSorteiosAnteriores(TipoJogo tipoJogo, File file) {
         List<int[]> jogos = new ArrayList<>();
         int line = 1;
         try (FileInputStream fis = new FileInputStream(file); Workbook workbook = new XSSFWorkbook(fis)) {
             Sheet sheet = workbook.getSheetAt(0); // Assuming you want to read the first sheet
+            final int shift = 2;
             for (Row row : sheet) {
                 if (line++ == 1) {
                     continue;
                 }
-                int[] jogo = new int[6];
-                jogo[0] = (int) row.getCell(2).getNumericCellValue();
-                jogo[1] = (int) row.getCell(3).getNumericCellValue();
-                jogo[2] = (int) row.getCell(4).getNumericCellValue();
-                jogo[3] = (int) row.getCell(5).getNumericCellValue();
-                jogo[4] = (int) row.getCell(6).getNumericCellValue();
-                jogo[5] = (int) row.getCell(7).getNumericCellValue();
+                int[] jogo = new int[tipoJogo.numeros];
+                for (int col = 0; col < tipoJogo.numeros; col++) {
+                    jogo[col] = (int) row.getCell(shift + col).getNumericCellValue();
+                }
+
                 line++;
                 jogos.add(jogo);
             }
@@ -44,7 +43,7 @@ public class SorteiosReader {
         return jogos;
     }
 
-    public static List<int[]> lerApostas(File file) throws IOException {
+    public static List<int[]> lerApostas(TipoJogo tipoJogo,File file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = null;
         var apostas = new ArrayList<int[]>();
@@ -57,7 +56,7 @@ public class SorteiosReader {
                     continue;
                 }
                 numeros = line.split(" ");
-                var aposta = new int[6];
+                var aposta = new int[tipoJogo.numeros];
                 for (int i = 0; i < numeros.length; i++) {
                     aposta[i] = Integer.parseInt(numeros[i]);
                 }
@@ -73,3 +72,4 @@ public class SorteiosReader {
         return apostas;
     }
 }
+

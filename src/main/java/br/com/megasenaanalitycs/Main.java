@@ -1,5 +1,6 @@
 package br.com.megasenaanalitycs;
 
+import br.com.megasenaanalitycs.integracao.TipoJogo;
 import br.com.megasenaanalitycs.utils.EstatisticaDinamica;
 import br.com.megasenaanalitycs.utils.Utils;
 
@@ -26,6 +27,7 @@ public class Main {
         String option;
         List<int[]> sorteios;
         List<int[]> frequencias;
+        var tipoJogo = TipoJogo.MEGASENA;
         do {
             System.out.println("\n*****************");
             System.out.println("Choose an option:");
@@ -33,7 +35,7 @@ public class Main {
             System.out.println("2- Conferir Apostas");
             System.out.println("3- Validar apostas");
             System.out.println("4- Gerar Frequencia Ultimos Sorteios");
-            System.out.println("4- Gerar Frequencia Todos Sorteios");
+            System.out.println("5- Gerar Frequencia Todos Sorteios");
             System.out.println("S- Sair");
             System.out.println("*****************");
 
@@ -41,22 +43,22 @@ public class Main {
 
             switch (option.toUpperCase()) {
                 case "1":
-                    sorteios = lerSorteiosAnteriores(sorteiosFile);
+                    sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
                     Utils.print("Sorteios Anteriores", sorteios);
                     break;
                 case "2":
-                    conferir(4, 5, 10, 34, 58, 59);
+                    conferir(tipoJogo, new int[]{4, 5, 10, 34, 58, 59});
                     break;
                 case "3":
-                    verificarApostas(sorteiosFile, apostasFile);
+                    verificarApostas(tipoJogo, sorteiosFile, apostasFile);
                     break;
                 case "4":
-                    sorteios = lerSorteiosAnteriores(sorteiosFile);
+                    sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
                     var frequenciaSorteios = EstatisticaDinamica.gerarUltimoBlocoFrequenciaSorteios(sorteios, TAMANHO_BLOCCO_FREQUENCIA);
                     EstatisticaDinamica.printNumeroPorFrequencia(frequenciaSorteios);
                     break;
                 case "5":
-                    sorteios = lerSorteiosAnteriores(sorteiosFile);
+                    sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
                     frequencias = EstatisticaDinamica.gerarFrequenciaSorteios(sorteios, TAMANHO_BLOCCO_FREQUENCIA);
                     EstatisticaDinamica.printFrequenciaPorSorteio(sorteios, frequencias);
                     break;
@@ -72,9 +74,9 @@ public class Main {
         scanner.close();
     }
 
-    private static void verificarApostas(File sorteioFile, File apostasFile) throws IOException {
-        var apostas = lerApostas(apostasFile);
-        var sorteios = lerSorteiosAnteriores(sorteioFile);
+    private static void verificarApostas(TipoJogo tipoJogo, File sorteioFile, File apostasFile) throws IOException {
+        var apostas = lerApostas(tipoJogo, apostasFile);
+        var sorteios = lerSorteiosAnteriores(tipoJogo, sorteioFile);
         var apostasRepetidas = new HashSet<int[]>();
         for (var aposta : apostas) {
             if (contains(sorteios, aposta)) {
@@ -101,8 +103,8 @@ public class Main {
     }
 
 
-    private static void conferir(int... sorteados) throws IOException {
-        List<int[]> apostas = lerApostas(new File("src/main/resources/apostas.txt"));
+    private static void conferir(TipoJogo tipoJogo, int[] sorteados) throws IOException {
+        List<int[]> apostas = lerApostas(tipoJogo, new File("src/main/resources/apostas.txt"));
         var premiados = new HashMap<String, List<String>>();
         int acertos = 0;
         for (var aposta : apostas) {
