@@ -4,7 +4,6 @@ import br.com.megasenaanalitycs.integracao.TipoJogo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 public class EstatisticaDinamica {
@@ -49,6 +48,27 @@ public class EstatisticaDinamica {
 
     public static void printNumeroPorFrequencia(int[] frequencias) {
         printPorFrequenciaMaxima(frequencias, 1000);
+    }
+
+
+    public static void printFrequenciaPorApostas(List<int[]> apostas, int[] frequencia) {
+        var ap = "";
+        var freq = "";
+        for (var aposta : apostas) {
+            for (int i = 0; i < aposta.length; i++) {
+                ap += asString(aposta[i]) + " ";
+            }
+            for (int i = 0; i < aposta.length; i++) {
+                freq += asString(frequencia[aposta[i] - 1]) + " ";
+            }
+            System.out.println(ap + "\n" + freq + "\n");
+            ap = "";
+            freq = "";
+        }
+    }
+
+    public static String asString(int numero) {
+        return numero >= 0 && numero <= 9 ? "0" + numero : String.valueOf(numero);
     }
 
     public static void printFrequenciaPorSorteio(List<int[]> sorteios, List<int[]> frequencias) {
