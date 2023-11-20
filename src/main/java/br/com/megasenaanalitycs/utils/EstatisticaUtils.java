@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class EstatisticaDinamica {
+public class EstatisticaUtils {
 
     public static List<int[]> gerarApostasAleatorias(int totalApostas) {
         var apostas = new ArrayList<int[]>();
@@ -180,6 +180,4 @@ public class EstatisticaDinamica {
             System.out.println("vel " + (idxVel + 1) + " => " + Utils.stringfy(velocidades[idxVel]));
         }
     }
-
-
 }

@@ -16,11 +16,11 @@ import java.util.Set;
 
 import static br.com.megasenaanalitycs.integracao.SorteiosReader.lerApostas;
 import static br.com.megasenaanalitycs.integracao.SorteiosReader.lerSorteiosAnteriores;
-import static br.com.megasenaanalitycs.utils.EstatisticaDinamica.gerarFrequenciaSorteios;
-import static br.com.megasenaanalitycs.utils.EstatisticaDinamica.gerarUltimoBlocoFrequenciaSorteios;
-import static br.com.megasenaanalitycs.utils.EstatisticaDinamica.printFrequenciaPorApostas;
-import static br.com.megasenaanalitycs.utils.EstatisticaDinamica.printFrequenciaPorSorteio;
-import static br.com.megasenaanalitycs.utils.EstatisticaDinamica.printNumeroPorFrequencia;
+import static br.com.megasenaanalitycs.utils.EstatisticaUtils.gerarFrequenciaSorteios;
+import static br.com.megasenaanalitycs.utils.EstatisticaUtils.gerarUltimoBlocoFrequenciaSorteios;
+import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printFrequenciaPorApostas;
+import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printFrequenciaPorSorteio;
+import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printNumeroPorFrequencia;
 import static br.com.megasenaanalitycs.utils.Utils.print;
 import static br.com.megasenaanalitycs.utils.Utils.stringfy;
 
@@ -60,7 +60,7 @@ public class Main {
                     lerSorteiorAnteriores();
                     break;
                 case "3":
-                    conferir(new int[]{4, 5, 10, 34, 58, 59});
+                    conferir();
                     break;
                 case "4":
                     verificarApostas();
@@ -195,7 +195,14 @@ public class Main {
     }
 
 
-    private static void conferir(int[] sorteados) throws IOException {
+    private static void conferir() throws IOException {
+        System.out.println("\n*****************");
+        System.out.println("Digite os numeros Sorteados");
+        var sorteados = toNumeros(scanner.nextLine());
+        if (sorteados.length != tipoJogo.numeros) {
+            System.err.println("Você deve digitar apenas " + tipoJogo.numeros + " numeros!");
+            return;
+        }
         List<int[]> apostas = lerApostas(tipoJogo, new File("src/main/resources/apostas.txt"));
         var premiados = new HashMap<String, List<String>>();
         int acertos = 0;
@@ -243,5 +250,14 @@ public class Main {
         }
         Arrays.sort(arr);
         return arr;
+    }
+
+    private static int[] toNumeros(String str) {
+        var arr = str.replace("\\s+", " ").split(" ");
+        var numeros = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            numeros[i] = Integer.valueOf(arr[i]);
+        }
+        return numeros;
     }
 }
