@@ -1,0 +1,22 @@
+Apostador, Jogou, Pagou
+
+Alessandra, sim, sim
+Andre, não, não
+Bruna, sim, não
+Christopher, não, não
+Clarete, sim, não
+Cleriston, não, não
+Dani, não, não
+Danilo, não, não
+Fernando, não, não
+Leo, não, não
+Marcio, sim, sim
+Marconi, não, não
+Maria Eug, não, não
+Maria Gabi, não, não
+Nando, não, não
+Nogueira, sim, sim
+Ricardo, não, não
+Rodrigo, não, não
+Rose, não, não
+Vinicius, não, não

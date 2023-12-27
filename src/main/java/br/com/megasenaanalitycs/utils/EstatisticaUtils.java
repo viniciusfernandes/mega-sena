@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static br.com.megasenaanalitycs.utils.Utils.stringfy;
+
 public class EstatisticaUtils {
 
     public static List<int[]> gerarApostasAleatorias(int totalApostas) {
@@ -56,19 +58,15 @@ public class EstatisticaUtils {
         var freq = "";
         for (var aposta : apostas) {
             for (int i = 0; i < aposta.length; i++) {
-                ap += asString(aposta[i]) + " ";
+                ap += stringfy(aposta[i]) + " ";
             }
             for (int i = 0; i < aposta.length; i++) {
-                freq += asString(frequencia[aposta[i] - 1]) + " ";
+                freq += stringfy(frequencia[aposta[i] - 1]) + " ";
             }
             System.out.println(ap + "\n" + freq + "\n");
             ap = "";
             freq = "";
         }
-    }
-
-    public static String asString(int numero) {
-        return numero >= 0 && numero <= 9 ? "0" + numero : String.valueOf(numero);
     }
 
     public static void printFrequenciaPorSorteio(List<int[]> sorteios, List<int[]> frequencias) {
@@ -96,6 +94,16 @@ public class EstatisticaUtils {
         Utils.print("Frequência dos Últimos Sorteios", num);
     }
 
+    public static void printFrequenciaSorteios(final List<int[]> frequencias) {
+        var saida = new StringBuilder();
+        for (int i = 0; i <= frequencias.size(); i++) {
+            saida.append("(").append(i + 1).append(") ");
+            saida.append(Utils.stringfy(frequencias.get(i)));
+            saida.append("\n");
+        }
+        Utils.print("Frequencia dos Sorteios", saida);
+    }
+
     public static List<int[]> gerarFrequenciaSorteios(TipoJogo tipoJogo, List<int[]> sorteios, int tamanhoBloco) {
         if (tamanhoBloco > sorteios.size()) {
             tamanhoBloco = sorteios.size();
@@ -105,7 +113,6 @@ public class EstatisticaUtils {
         List<int[]> frequencias = new ArrayList<>();
         int[] frequencia = null;
         int idx;
-        StringBuilder saida = new StringBuilder();
         for (int idxBloco = 0; idxBloco <= lastIdx; idxBloco++) {
             blocoSorteios = sorteios.subList(idxBloco, idxBloco + tamanhoBloco);
             frequencia = new int[tipoJogo.total];
@@ -117,11 +124,7 @@ public class EstatisticaUtils {
                 }
             }
             frequencias.add(frequencia);
-            saida.append("(").append(idxBloco + 1).append(") ");
-            Utils.stringfy(frequencia, saida);
-            saida.append("\n");
         }
-        Utils.print("Frequencia dos Sorteios", saida);
         return frequencias;
     }
 

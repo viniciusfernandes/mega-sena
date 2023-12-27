@@ -46,33 +46,5 @@ public class SorteiosReader {
         return jogos;
     }
 
-    public static List<int[]> lerApostas(TipoJogo tipoJogo, File file) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line = null;
-        var apostas = new ArrayList<int[]>();
-        String[] numeros;
-        int lineNum = 0;
-        while ((line = reader.readLine()) != null) {
-            lineNum++;
-            try {
-                if (line.isEmpty() || line.isBlank() || (line.charAt(0) < '0' || line.charAt(0) > '9')) {
-                    continue;
-                }
-                numeros = line.split(" ");
-                var aposta = new int[tipoJogo.numeros];
-                for (int i = 0; i < numeros.length; i++) {
-                    aposta[i] = Integer.parseInt(numeros[i]);
-                }
-                Arrays.sort(aposta);
-                apostas.add(aposta);
-            } catch (Exception e) {
-                System.err.println("Falha na linha " + lineNum + " => " + line);
-                e.printStackTrace();
-                throw e;
-            }
-        }
-        reader.close();
-        return apostas;
-    }
 }
 

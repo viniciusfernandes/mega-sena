@@ -6,23 +6,20 @@ public class Utils {
     private Utils() {
     }
 
-    public static String stringfy(int[] valores) {
-        StringBuilder saida = new StringBuilder();
-        stringfy(valores, saida);
-        return saida.toString();
+    public static String stringfy(int valor) {
+        return valor >= 0 && valor <= 9 ? "0" + valor : String.valueOf(valor);
     }
 
-    public static void stringfy(int[] valores, StringBuilder saida) {
+    public static String stringfy(int[] valores) {
         int last = valores.length - 1;
+        var saida = "";
         for (int i = 0; i < valores.length; i++) {
-            if (valores[i] >= 0 && valores[i] <= 9) {
-                saida.append("0");
-            }
-            saida.append(valores[i]);
+            saida += stringfy(valores[i]);
             if (i < last) {
-                saida.append(" ");
+                saida += " ";
             }
         }
+        return saida;
     }
 
     public static void printFrequenciaNumeros(int[] frequencia) {
@@ -55,7 +52,7 @@ public class Utils {
     }
 
     public static void print(String titulo, StringBuilder resultados) {
-        final  var stars = "********************************\n";
+        final var stars = "********************************\n";
         StringBuilder s = new StringBuilder();
         s.append(stars);
         s.append(titulo).append("\n");
