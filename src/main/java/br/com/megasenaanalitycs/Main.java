@@ -1,26 +1,24 @@
 package br.com.megasenaanalitycs;
 
-import br.com.megasenaanalitycs.integracao.TipoJogo;
+import br.com.megasenaanalitycs.repository.ApostaRepository;
+import br.com.megasenaanalitycs.repository.TipoJogo;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-import static br.com.megasenaanalitycs.integracao.SorteiosReader.lerSorteiosAnteriores;
 import static br.com.megasenaanalitycs.utils.EstatisticaUtils.*;
 import static br.com.megasenaanalitycs.utils.Utils.print;
 import static br.com.megasenaanalitycs.utils.Utils.stringfy;
 
 public class Main {
-    private static final int TAMANHO_BLOCCO_FREQUENCIA = 24;
+
     private static final Scanner scanner = new Scanner(System.in);
     private static String option;
-    private static File sorteiosFile = null;
     private static TipoJogo tipoJogo;
+    private static ApostaService apostaService;
 
     public static void main(String[] args) throws IOException {
+        apostaService = new ApostaService(new ApostaRepository());
         do {
             if (tipoJogo == null) {
                 option = "1";
@@ -90,36 +88,30 @@ public class Main {
     private static void gerarNovasApostasEstatisticas() {
         System.out.println("\n*****************");
         System.out.println("Digite a quantidade de apostas");
-        var sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
-        var frequencia = gerarUltimoBlocoFrequenciaSorteios(tipoJogo, sorteios, TAMANHO_BLOCCO_FREQUENCIA);
+        var sorteios = apostaService.lerSorteiosAnteriores(tipoJogo);
+        var frequencia = apostaService.gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         var apostas = gerarApostas(5);
         print("Apostas sem as Estatísticas", apostas);
     }
 
     private static void printFrequenciaUltimosSorteios() {
-        printNumeroPorFrequencia(gerarFrequenciaUltimosSorteios());
-    }
-
-    private static int[] gerarFrequenciaUltimosSorteios() {
-        var sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
-        return gerarUltimoBlocoFrequenciaSorteios(tipoJogo, sorteios, TAMANHO_BLOCCO_FREQUENCIA);
+        printNumeroPorFrequencia(apostaService.gerarUltimoBlocoFrequenciaSorteios(tipoJogo));
     }
 
     private static void printFrequenciaTodosSorteios() {
-        var sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
-        var frequencias = gerarFrequenciaSorteios(tipoJogo, sorteios, TAMANHO_BLOCCO_FREQUENCIA);
+        var sorteios = apostaService.lerSorteiosAnteriores(tipoJogo);
+        var frequencias = apostaService.gerarFrequenciaSorteios(tipoJogo);
         printFrequenciaPorSorteio(sorteios, frequencias);
     }
 
     private static void gerarFrequenciaApostas() throws IOException {
-        var apostas = lerApostas(tipoJogo);
-        var sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
-        var frequencia = gerarUltimoBlocoFrequenciaSorteios(tipoJogo, sorteios, TAMANHO_BLOCCO_FREQUENCIA);
+        var apostas = apostaService.lerApostas(tipoJogo);
+        var frequencia = apostaService.gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         printFrequenciaPorApostas(apostas, frequencia);
     }
 
     private static void lerSorteiorAnteriores() {
-        print("Sorteios Anteriores", lerSorteiosAnteriores(tipoJogo, sorteiosFile));
+        print("Sorteios Anteriores", apostaService.lerSorteiosAnteriores(tipoJogo));
     }
 
     private static void escolherTipoJogo() {
@@ -133,7 +125,6 @@ public class Main {
         }
         System.out.println("\n*****************");
         System.out.println("Você escolheu " + tipoJogo);
-        sorteiosFile = new File("src/main/resources/" + tipoJogo + ".xlsx");
     }
 
     private static List<int[]> gerarApostas(int numApostas) {
@@ -156,80 +147,15 @@ public class Main {
         return apostas;
     }
 
-    private static boolean isEstatisticaApostaValida(int[] aposta, int[] frequencias) {
-        var count = 0;
-        for (int i = 0; i < aposta.length; i++) {
-            if (frequencias[aposta[i] - 1] >= 3) {
-                count++;
-            }
-            if (count > 2) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static int[] extrairFrequencias(int[] aposta, int[] frequencias) {
-        var freq = new int[aposta.length];
-        for (int i = 0; i < aposta.length; i++) {
-            freq[i] = frequencias[aposta[i] - 1];
-        }
-        return freq;
-    }
-
 
     private static void validarApostas() throws IOException {
-        var apostas = lerApostas(tipoJogo);
-        var sorteios = lerSorteiosAnteriores(tipoJogo, sorteiosFile);
-        var frequencias = gerarFrequenciaUltimosSorteios();
-        var repetidas = new ArrayList<int[]>();
-
-        final var REPETIDA = "repetida";
-        final var SORTEADA = "sorteada";
-        final var DESFAVORAVEL = "desfavoravel";
-        var mensagensMap = Map.of(
-                DESFAVORAVEL, new ArrayList<String>(),
-                SORTEADA, new ArrayList<String>(),
-                REPETIDA, new ArrayList<String>());
-        var numAposta = 0;
-        for (var aposta : apostas) {
-            numAposta++;
-            if (contains(sorteios, aposta)) {
-                mensagensMap.get(SORTEADA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta) + "] já existe em resultados anteriores");
-            }
-            if (!isEstatisticaApostaValida(aposta, frequencias)) {
-                var frequencia = extrairFrequencias(aposta, frequencias);
-                mensagensMap.get(DESFAVORAVEL).add("A aposta número " + stringfy(numAposta)
-                        + " [" + stringfy(aposta) + "] não contém uma estatística favorável => " + stringfy(frequencia));
-            }
-            if (contains(repetidas, aposta)) {
-                mensagensMap.get(REPETIDA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta) + "] esta repetida");
-            } else {
-                repetidas.add(aposta);
-            }
-
-        }
-
-        if (mensagensMap.get(REPETIDA).isEmpty() && mensagensMap.get(DESFAVORAVEL).isEmpty() && mensagensMap.get(SORTEADA).isEmpty()) {
+        var mensagens = apostaService.validarApostas(tipoJogo);
+        if (mensagens.isEmpty()) {
             System.out.println("TODOS OS JOGOS ESTÃO OK!");
         } else {
-            mensagensMap.forEach((tipo, mensagens) -> {
-                for (var mensagem : mensagens) {
-                    System.err.println(mensagem);
-                }
-            });
+            mensagens.forEach(System.err::println);
         }
     }
-
-    private static boolean contains(Collection<int[]> sorteios, int[] aposta) {
-        for (var sorteio : sorteios) {
-            if (Arrays.equals(sorteio, aposta)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     private static void conferir() throws IOException {
         System.out.println("\n*****************");
@@ -239,7 +165,7 @@ public class Main {
             System.err.println("Você deve digitar apenas " + tipoJogo.numeros + " numeros!");
             return;
         }
-        List<int[]> apostas = lerApostas(tipoJogo);
+        List<int[]> apostas = apostaService.lerApostas(tipoJogo);
         var premiados = new HashMap<String, List<String>>();
         int acertos = 0;
         for (var aposta : apostas) {
@@ -297,33 +223,5 @@ public class Main {
         return numeros;
     }
 
-    private static List<int[]> lerApostas(TipoJogo tipoJogo) throws IOException {
-        var apostasFile = new File("src/main/resources/apostas.txt");
-        BufferedReader reader = new BufferedReader(new FileReader(apostasFile));
-        String line = null;
-        var apostas = new ArrayList<int[]>();
-        String[] numeros;
-        int lineNum = 0;
-        while ((line = reader.readLine()) != null) {
-            lineNum++;
-            try {
-                if (line.isEmpty() || line.isBlank() || (line.charAt(0) < '0' || line.charAt(0) > '9')) {
-                    continue;
-                }
-                numeros = line.split(" ");
-                var aposta = new int[tipoJogo.numeros];
-                for (int i = 0; i < numeros.length; i++) {
-                    aposta[i] = Integer.parseInt(numeros[i]);
-                }
-                Arrays.sort(aposta);
-                apostas.add(aposta);
-            } catch (Exception e) {
-                System.err.println("Falha na linha " + lineNum + " => " + line);
-                e.printStackTrace();
-                throw e;
-            }
-        }
-        reader.close();
-        return apostas;
-    }
+
 }

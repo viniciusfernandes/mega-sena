@@ -1,6 +1,6 @@
 package br.com.megasenaanalitycs.utils;
 
-import br.com.megasenaanalitycs.integracao.TipoJogo;
+import br.com.megasenaanalitycs.repository.TipoJogo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,12 +28,6 @@ public class EstatisticaUtils {
         }
         return apostas;
     }
-
-    public static int[] gerarUltimoBlocoFrequenciaSorteios(TipoJogo tipoJogo, List<int[]> sorteios, int tamanhoBloco) {
-        var frequencias = gerarFrequenciaSorteios(tipoJogo, sorteios, tamanhoBloco);
-        return frequencias.get(frequencias.size() - 1);
-    }
-
 
     public static void printPorFrequenciaMaxima(int[] frequencias, int frequenciaLimite) {
         var freq = new StringBuilder();
@@ -104,29 +98,6 @@ public class EstatisticaUtils {
         Utils.print("Frequencia dos Sorteios", saida);
     }
 
-    public static List<int[]> gerarFrequenciaSorteios(TipoJogo tipoJogo, List<int[]> sorteios, int tamanhoBloco) {
-        if (tamanhoBloco > sorteios.size()) {
-            tamanhoBloco = sorteios.size();
-        }
-        int lastIdx = sorteios.size() - tamanhoBloco;
-        List<int[]> blocoSorteios = null;
-        List<int[]> frequencias = new ArrayList<>();
-        int[] frequencia = null;
-        int idx;
-        for (int idxBloco = 0; idxBloco <= lastIdx; idxBloco++) {
-            blocoSorteios = sorteios.subList(idxBloco, idxBloco + tamanhoBloco);
-            frequencia = new int[tipoJogo.total];
-
-            for (int[] sorteio : blocoSorteios) {
-                for (int i = 0; i < sorteio.length; i++) {
-                    idx = sorteio[i] - 1;
-                    frequencia[idx]++;
-                }
-            }
-            frequencias.add(frequencia);
-        }
-        return frequencias;
-    }
 
     public static void printFrequenciaNumerosSorteados(List<int[]> sorteios, List<int[]> blocosFrequencias, int tamanhoBloco) {
         int[] frequencias;

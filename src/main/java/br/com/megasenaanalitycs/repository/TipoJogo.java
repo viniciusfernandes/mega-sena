@@ -1,4 +1,4 @@
-package br.com.megasenaanalitycs.integracao;
+package br.com.megasenaanalitycs.repository;
 
 public enum TipoJogo {
     MEGASENA(6, 60), LOTOMANIA(20, 100);
