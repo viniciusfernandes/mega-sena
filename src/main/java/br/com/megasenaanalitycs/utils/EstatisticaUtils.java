@@ -102,7 +102,7 @@ public class EstatisticaUtils {
     public static void printFrequenciaNumerosSorteados(List<int[]> sorteios, List<int[]> blocosFrequencias, int tamanhoBloco) {
         int[] frequencias;
         int[] numerosSorteados;
-        int idxNumero = 0;
+        int idxNumero  ;
         StringBuilder saida = new StringBuilder();
         int idxPenultimoBloco = blocosFrequencias.size() - 2;
         for (int idxBloco = 0, idxSort = tamanhoBloco; idxBloco <= idxPenultimoBloco; idxBloco++, idxSort++) {

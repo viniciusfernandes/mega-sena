@@ -45,9 +45,9 @@ public class ApostaService {
             tamanhoBloco = sorteios.size();
         }
         int lastIdx = sorteios.size() - tamanhoBloco;
-        List<int[]> blocoSorteios = null;
+        List<int[]> blocoSorteios;
         List<int[]> frequencias = new ArrayList<>();
-        int[] frequencia = null;
+        int[] frequencia;
         int idx;
         for (int idxBloco = 0; idxBloco <= lastIdx; idxBloco++) {
             blocoSorteios = sorteios.subList(idxBloco, idxBloco + tamanhoBloco);
@@ -102,6 +102,30 @@ public class ApostaService {
 
         }
         return mensagensMap.values().stream().flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    public List<int[]> gerarApostas(TipoJogo tipoJogo, int numApostas) {
+        var random = new Random();
+        var aposta = new HashSet<Integer>();
+        var apostas = new ArrayList<int[]>(numApostas);
+        int num;
+        while (numApostas > 0) {
+            do {
+                num = random.nextInt(tipoJogo.total) + 1;
+                if (aposta.contains(num)) {
+                    continue;
+                }
+                aposta.add(num);
+            } while (aposta.size() < tipoJogo.numeros);
+            apostas.add(toSortedArray(aposta));
+            aposta.clear();
+            numApostas--;
+        }
+        return apostas;
+    }
+
+    private int[] toSortedArray(Collection<Integer> values) {
+        return values.stream().mapToInt(Integer::intValue).sorted().toArray();
     }
 
     private boolean contains(Collection<int[]> sorteios, int[] aposta) {

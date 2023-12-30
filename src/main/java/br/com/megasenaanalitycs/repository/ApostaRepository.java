@@ -13,12 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ApostaRepository {
-    private static Logger logger = LoggerFactory.getLogger(ApostaRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApostaRepository.class);
 
     public List<int[]> lerApostas(TipoJogo tipoJogo) throws IOException {
         var apostasFile = new File("src/main/resources/apostas.txt");
         var reader = new BufferedReader(new FileReader(apostasFile));
-        String line = null;
+        String line;
         var apostas = new ArrayList<int[]>();
         String[] numeros;
         int lineNum = 0;

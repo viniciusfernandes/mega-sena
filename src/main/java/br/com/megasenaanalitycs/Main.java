@@ -4,9 +4,14 @@ import br.com.megasenaanalitycs.repository.ApostaRepository;
 import br.com.megasenaanalitycs.repository.TipoJogo;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
-import static br.com.megasenaanalitycs.utils.EstatisticaUtils.*;
+import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printFrequenciaPorApostas;
+import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printFrequenciaPorSorteio;
+import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printNumeroPorFrequencia;
 import static br.com.megasenaanalitycs.utils.Utils.print;
 import static br.com.megasenaanalitycs.utils.Utils.stringfy;
 
@@ -43,13 +48,13 @@ public class Main {
                     escolherTipoJogo();
                     break;
                 case "2":
-                    lerSorteiorAnteriores();
+                    printSorteiorAnteriores();
                     break;
                 case "3":
-                    conferir();
+                    printConferenciaApostas();
                     break;
                 case "4":
-                    validarApostas();
+                    printValidacaoApostas();
                     break;
                 case "5":
                     printFrequenciaUltimosSorteios();
@@ -58,13 +63,13 @@ public class Main {
                     printFrequenciaTodosSorteios();
                     break;
                 case "7":
-                    gerarNovasApostasEstatisticas();
+                    printNovasApostasEstatisticas();
                     break;
                 case "8":
-                    gerarNovasApostasSemEstatisticas();
+                    printNovasApostasSemEstatisticas();
                     break;
                 case "9":
-                    gerarFrequenciaApostas();
+                    printFrequenciaApostas();
                     break;
                 case "S":
                     System.out.println("Encerrando...");
@@ -78,19 +83,17 @@ public class Main {
         scanner.close();
     }
 
-    private static void gerarNovasApostasSemEstatisticas() {
+    private static void printNovasApostasSemEstatisticas() {
         System.out.println("\n*****************");
         System.out.println("Digite a quantidade de apostas");
         var numeroApostas = Integer.parseInt(scanner.nextLine());
-        print("Apostas sem Estatísticas", gerarApostas(numeroApostas));
+        print("Apostas sem Estatísticas", apostaService.gerarApostas(tipoJogo, numeroApostas));
     }
 
-    private static void gerarNovasApostasEstatisticas() {
+    private static void printNovasApostasEstatisticas() {
         System.out.println("\n*****************");
         System.out.println("Digite a quantidade de apostas");
-        var sorteios = apostaService.lerSorteiosAnteriores(tipoJogo);
-        var frequencia = apostaService.gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
-        var apostas = gerarApostas(5);
+        var apostas = apostaService.gerarApostas(tipoJogo, 5);
         print("Apostas sem as Estatísticas", apostas);
     }
 
@@ -104,13 +107,13 @@ public class Main {
         printFrequenciaPorSorteio(sorteios, frequencias);
     }
 
-    private static void gerarFrequenciaApostas() throws IOException {
+    private static void printFrequenciaApostas() throws IOException {
         var apostas = apostaService.lerApostas(tipoJogo);
         var frequencia = apostaService.gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         printFrequenciaPorApostas(apostas, frequencia);
     }
 
-    private static void lerSorteiorAnteriores() {
+    private static void printSorteiorAnteriores() {
         print("Sorteios Anteriores", apostaService.lerSorteiosAnteriores(tipoJogo));
     }
 
@@ -118,7 +121,7 @@ public class Main {
         System.out.println("1- Mega Sena");
         System.out.println("2- Lotomania");
         option = scanner.nextLine();
-        if ("1".equalsIgnoreCase(option.toUpperCase())) {
+        if ("1".equalsIgnoreCase(option)) {
             tipoJogo = TipoJogo.MEGASENA;
         } else {
             tipoJogo = TipoJogo.LOTOMANIA;
@@ -127,28 +130,8 @@ public class Main {
         System.out.println("Você escolheu " + tipoJogo);
     }
 
-    private static List<int[]> gerarApostas(int numApostas) {
-        var random = new Random();
-        var aposta = new HashSet<Integer>();
-        var apostas = new ArrayList<int[]>(numApostas);
-        int num;
-        while (numApostas > 0) {
-            do {
-                num = random.nextInt(tipoJogo.total) + 1;
-                if (aposta.contains(num)) {
-                    continue;
-                }
-                aposta.add(num);
-            } while (aposta.size() < tipoJogo.numeros);
-            apostas.add(toSortedArray(aposta));
-            aposta.clear();
-            numApostas--;
-        }
-        return apostas;
-    }
 
-
-    private static void validarApostas() throws IOException {
+    private static void printValidacaoApostas() throws IOException {
         var mensagens = apostaService.validarApostas(tipoJogo);
         if (mensagens.isEmpty()) {
             System.out.println("TODOS OS JOGOS ESTÃO OK!");
@@ -157,7 +140,7 @@ public class Main {
         }
     }
 
-    private static void conferir() throws IOException {
+    private static void printConferenciaApostas() throws IOException {
         System.out.println("\n*****************");
         System.out.println("Digite os numeros Sorteados");
         var sorteados = toNumeros(scanner.nextLine());
@@ -167,7 +150,7 @@ public class Main {
         }
         List<int[]> apostas = apostaService.lerApostas(tipoJogo);
         var premiados = new HashMap<String, List<String>>();
-        int acertos = 0;
+        int acertos;
         for (var aposta : apostas) {
             acertos = 0;
             for (int idxApt = 0; idxApt < aposta.length; idxApt++) {
@@ -195,24 +178,15 @@ public class Main {
         });
     }
 
-    private static void addPermiado(String premiacao, int[] aposta, HashMap<String, List<String>> premiados) {
-        var premiado = premiados.get(premiacao);
-        if (premiado == null) {
-            premiado = new ArrayList<>();
-            premiados.put(premiacao, premiado);
+    private static void addPermiado(String premiacao, int[] aposta, HashMap<String, List<String>> premiadosMap) {
+        var premiados = premiadosMap.get(premiacao);
+        if (premiados == null) {
+            premiados = new ArrayList<>();
+            premiadosMap.put(premiacao, premiados);
         }
-        premiado.add(stringfy(aposta));
+        premiados.add(stringfy(aposta));
     }
 
-    private static int[] toSortedArray(Set<Integer> bucket) {
-        var arr = new int[bucket.size()];
-        var i = 0;
-        for (var num : bucket) {
-            arr[i++] = num;
-        }
-        Arrays.sort(arr);
-        return arr;
-    }
 
     private static int[] toNumeros(String str) {
         var arr = str.replace("\\s+", " ").split(" ");
@@ -222,6 +196,4 @@ public class Main {
         }
         return numeros;
     }
-
-
 }
