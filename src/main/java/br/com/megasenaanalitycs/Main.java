@@ -39,6 +39,7 @@ public class Main {
                 System.out.println("7- Gerar Novas Apostas Estatísticas");
                 System.out.println("8- Gerar Novas Apostas Sem Estatísticas");
                 System.out.println("9- Gerar Frequencia das Apostas");
+                System.out.println("H- Validar Hipotese");
                 System.out.println("S- Sair");
                 System.out.println("*****************");
                 option = scanner.nextLine();
@@ -71,6 +72,8 @@ public class Main {
                 case "9":
                     printFrequenciaApostas();
                     break;
+                case "H":
+                    printValidacaoHipoteseEstatistica();
                 case "S":
                     System.out.println("Encerrando...");
                     break;
@@ -81,6 +84,12 @@ public class Main {
 
         } while (!option.equalsIgnoreCase("S"));
         scanner.close();
+    }
+
+    private static void printValidacaoHipoteseEstatistica() {
+        System.out.println("\n*****************");
+        var mensagens = apostaService.validarHipoteseEstatistica(tipoJogo);
+        mensagens.forEach(System.err::println);
     }
 
     private static void printNovasApostasSemEstatisticas() {

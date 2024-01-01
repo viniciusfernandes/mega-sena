@@ -27,11 +27,13 @@ public class ApostaService {
 
     public boolean isEstatisticaApostaValida(int[] aposta, int[] frequencias) {
         var count = 0;
+        var maxOccurence = 3;
+        var masxFreq = 3;
         for (int i = 0; i < aposta.length; i++) {
-            if (frequencias[aposta[i] - 1] >= 3) {
+            if (frequencias[aposta[i] - 1] >= masxFreq) {
                 count++;
             }
-            if (count > 2) {
+            if (count >= maxOccurence) {
                 return false;
             }
         }
@@ -69,6 +71,25 @@ public class ApostaService {
         return frequencias.get(frequencias.size() - 1);
     }
 
+    public List<String> validarHipoteseEstatistica(TipoJogo tipoJogo) {
+        var mensagens = new ArrayList<String>();
+        var frequencias = gerarFrequenciaSorteios(tipoJogo);
+        var sorteios = lerSorteiosAnteriores(tipoJogo);
+        var primeiraFreq = frequencias.size() - 2;
+        var total = 50;
+        for (int i = primeiraFreq, j = sorteios.size() - 1; i >= primeiraFreq - total; i--, j--) {
+            var frequencia = frequencias.get(i);
+            var aposta = sorteios.get(j);
+            if (!isEstatisticaApostaValida(aposta, frequencia)) {
+                var frequenciaAposta = extrairFrequenciaAposta(aposta, frequencia);
+                mensagens.add("A aposta número " + stringfy(j) +
+                        " [" + stringfy(aposta) + "] não contém uma estatística favorável => " +
+                        stringfy(frequenciaAposta));
+            }
+        }
+        mensagens.add(0, "Total de apostas avaliadas=" + (total) + ". Total de apostas invalidas=" + mensagens.size() + "\n");
+        return mensagens;
+    }
 
     public List<String> validarApostas(TipoJogo tipoJogo) throws IOException {
         var apostas = lerApostas(tipoJogo);
@@ -90,7 +111,7 @@ public class ApostaService {
                 mensagensMap.get(SORTEADA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta) + "] já existe em resultados anteriores");
             }
             if (!isEstatisticaApostaValida(aposta, frequencias)) {
-                var frequencia = extrairFrequencias(aposta, frequencias);
+                var frequencia = extrairFrequenciaAposta(aposta, frequencias);
                 mensagensMap.get(DESFAVORAVEL).add("A aposta número " + stringfy(numAposta)
                         + " [" + stringfy(aposta) + "] não contém uma estatística favorável => " + stringfy(frequencia));
             }
@@ -137,7 +158,7 @@ public class ApostaService {
         return false;
     }
 
-    private int[] extrairFrequencias(int[] aposta, int[] frequencias) {
+    private int[] extrairFrequenciaAposta(int[] aposta, int[] frequencias) {
         var freq = new int[aposta.length];
         for (int i = 0; i < aposta.length; i++) {
             freq[i] = frequencias[aposta[i] - 1];
