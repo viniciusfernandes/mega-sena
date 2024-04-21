@@ -1,5 +1,6 @@
 package br.com.megasenaanalitycs.utils;
 
+import br.com.megasenaanalitycs.repository.Aposta;
 import br.com.megasenaanalitycs.repository.TipoJogo;
 
 import java.util.ArrayList;
@@ -47,15 +48,15 @@ public class EstatisticaUtils {
     }
 
 
-    public static void printFrequenciaPorApostas(List<int[]> apostas, int[] frequencia) {
+    public static void printFrequenciaPorApostas(List<Aposta> apostas, int[] frequencia) {
         var ap = "";
         var freq = "";
         for (var aposta : apostas) {
-            for (int i = 0; i < aposta.length; i++) {
-                ap += stringfy(aposta[i]) + " ";
+            for (int i = 0; i < aposta.totalNumeros; i++) {
+                ap += stringfy(aposta.numeros[i]) + " ";
             }
-            for (int i = 0; i < aposta.length; i++) {
-                freq += stringfy(frequencia[aposta[i] - 1]) + " ";
+            for (int i = 0; i < aposta.totalNumeros; i++) {
+                freq += stringfy(frequencia[aposta.numeros[i] - 1]) + " ";
             }
             System.out.println(ap + "\n" + freq + "\n");
             ap = "";

@@ -1,5 +1,6 @@
 package br.com.megasenaanalitycs;
 
+import br.com.megasenaanalitycs.repository.Aposta;
 import br.com.megasenaanalitycs.repository.ApostaRepository;
 import br.com.megasenaanalitycs.repository.TipoJogo;
 
@@ -13,7 +14,6 @@ import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printFrequenciaPor
 import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printFrequenciaPorSorteio;
 import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printNumeroPorFrequencia;
 import static br.com.megasenaanalitycs.utils.Utils.print;
-import static br.com.megasenaanalitycs.utils.Utils.stringfy;
 
 public class Main {
 
@@ -157,14 +157,14 @@ public class Main {
             System.err.println("Você deve digitar apenas " + tipoJogo.numeros + " numeros!");
             return;
         }
-        List<int[]> apostas = apostaService.lerApostas(tipoJogo);
+        List<Aposta> apostas = apostaService.lerApostas(tipoJogo);
         var premiados = new HashMap<String, List<String>>();
         int acertos;
         for (var aposta : apostas) {
             acertos = 0;
-            for (int idxApt = 0; idxApt < aposta.length; idxApt++) {
+            for (int idxApt = 0; idxApt < aposta.totalNumeros; idxApt++) {
                 for (int idxSort = 0; idxSort < sorteados.length; idxSort++) {
-                    if (aposta[idxApt] == sorteados[idxSort]) {
+                    if (aposta.numeros[idxApt] == sorteados[idxSort]) {
                         acertos++;
                         break;
                     }
@@ -177,7 +177,7 @@ public class Main {
             } else if (acertos >= 6) {
                 addPermiado("sextina", aposta, premiados);
             }
-            System.out.println(stringfy(aposta) + " =>  " + acertos + " acertos");
+            System.out.println(aposta + " =>  " + acertos + " acertos");
         }
         premiados.forEach((premiacao, listaPremiados) -> {
             System.out.println("******" + premiacao + "******");
@@ -187,13 +187,13 @@ public class Main {
         });
     }
 
-    private static void addPermiado(String premiacao, int[] aposta, HashMap<String, List<String>> premiadosMap) {
+    private static void addPermiado(String premiacao, Aposta aposta, HashMap<String, List<String>> premiadosMap) {
         var premiados = premiadosMap.get(premiacao);
         if (premiados == null) {
             premiados = new ArrayList<>();
             premiadosMap.put(premiacao, premiados);
         }
-        premiados.add(stringfy(aposta));
+        premiados.add(aposta.toString());
     }
 
 

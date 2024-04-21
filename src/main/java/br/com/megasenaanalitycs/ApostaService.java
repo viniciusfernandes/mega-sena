@@ -1,5 +1,6 @@
 package br.com.megasenaanalitycs;
 
+import br.com.megasenaanalitycs.repository.Aposta;
 import br.com.megasenaanalitycs.repository.ApostaRepository;
 import br.com.megasenaanalitycs.repository.TipoJogo;
 
@@ -17,7 +18,7 @@ public class ApostaService {
         this.apostaRepository = apostaRepository;
     }
 
-    public List<int[]> lerApostas(TipoJogo tipoJogo) throws IOException {
+    public List<Aposta> lerApostas(TipoJogo tipoJogo) throws IOException {
         return apostaRepository.lerApostas(tipoJogo);
     }
 
@@ -107,18 +108,18 @@ public class ApostaService {
         var numAposta = 0;
         for (var aposta : apostas) {
             numAposta++;
-            if (contains(sorteios, aposta)) {
-                mensagensMap.get(SORTEADA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta) + "] já existe em resultados anteriores");
+            if (contains(sorteios, aposta.numeros)) {
+                mensagensMap.get(SORTEADA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta.numeros) + "] já existe em resultados anteriores");
             }
-            if (!isEstatisticaApostaValida(aposta, frequencias)) {
-                var frequencia = extrairFrequenciaAposta(aposta, frequencias);
+            if (!isEstatisticaApostaValida(aposta.numeros, frequencias)) {
+                var frequencia = extrairFrequenciaAposta(aposta.numeros, frequencias);
                 mensagensMap.get(DESFAVORAVEL).add("A aposta número " + stringfy(numAposta)
-                        + " [" + stringfy(aposta) + "] não contém uma estatística favorável => " + stringfy(frequencia));
+                        + " [" + stringfy(aposta.numeros) + "] não contém uma estatística favorável => " + stringfy(frequencia));
             }
-            if (contains(repetidas, aposta)) {
-                mensagensMap.get(REPETIDA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta) + "] esta repetida");
+            if (contains(repetidas, aposta.numeros)) {
+                mensagensMap.get(REPETIDA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta.numeros) + "] esta repetida");
             } else {
-                repetidas.add(aposta);
+                repetidas.add(aposta.numeros);
             }
 
         }

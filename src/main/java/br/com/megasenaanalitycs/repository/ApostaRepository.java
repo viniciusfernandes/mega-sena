@@ -7,7 +7,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,25 +19,34 @@ import java.util.List;
 public class ApostaRepository {
     private static final Logger logger = LoggerFactory.getLogger(ApostaRepository.class);
 
-    public List<int[]> lerApostas(TipoJogo tipoJogo) throws IOException {
+    public List<Aposta> lerApostas(TipoJogo tipoJogo) throws IOException {
         var apostasFile = new File("src/main/resources/apostas.txt");
         var reader = new BufferedReader(new FileReader(apostasFile));
         String line;
-        var apostas = new ArrayList<int[]>();
+        var apostas = new ArrayList<Aposta>();
         String[] numeros;
         int lineNum = 0;
+        Aposta aposta;
+        String nome = null;
         while ((line = reader.readLine()) != null) {
             lineNum++;
             try {
-                if (isNotAposta(line)) {
+                if (isBlanck(line)) {
                     continue;
                 }
-                numeros = line.split(" ");
-                var aposta = new int[tipoJogo.numeros];
-                for (int i = 0; i < numeros.length; i++) {
-                    aposta[i] = Integer.parseInt(numeros[i]);
+
+                if (isNome(line)) {
+                    nome = line;
+                    continue;
                 }
-                Arrays.sort(aposta);
+                aposta = new Aposta(tipoJogo.numeros);
+                aposta.apostador = nome;
+                numeros = line.split(" ");
+                aposta.numeros = new int[tipoJogo.numeros];
+                for (int i = 0; i < numeros.length; i++) {
+                    aposta.numeros[i] = Integer.parseInt(numeros[i]);
+                }
+                Arrays.sort(aposta.numeros);
                 apostas.add(aposta);
             } catch (Exception e) {
                 System.err.println("Falha na linha " + lineNum + " => " + line);
@@ -74,8 +87,12 @@ public class ApostaRepository {
         return jogos;
     }
 
-    private boolean isNotAposta(String line) {
-        return line == null || line.isBlank() || line.matches("[A-Z]*[a-z]+");
+    private boolean isBlanck(String line) {
+        return line == null || line.isBlank();
+    }
+
+    private boolean isNome(String line) {
+        return line.matches("[A-Z]*[a-z]+");
     }
 }
 
