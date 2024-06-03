@@ -1,4 +1,4 @@
-package br.com.megasenaanalitycs.repository;
+package br.com.megasenaanalitycs.domain;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

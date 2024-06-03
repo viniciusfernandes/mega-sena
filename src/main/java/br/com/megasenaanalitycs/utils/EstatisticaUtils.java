@@ -1,7 +1,7 @@
 package br.com.megasenaanalitycs.utils;
 
-import br.com.megasenaanalitycs.repository.Aposta;
-import br.com.megasenaanalitycs.repository.TipoJogo;
+import br.com.megasenaanalitycs.domain.Aposta;
+import br.com.megasenaanalitycs.domain.TipoJogo;
 
 import java.util.ArrayList;
 import java.util.Arrays;

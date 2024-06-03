@@ -62,9 +62,9 @@ public class Utils {
         System.out.println(s);
     }
 
-    public static void print(String titulo, List<int[]> sorteios) {
+    public static void print(String titulo, List<int[]> apostas) {
         StringBuilder appender = new StringBuilder();
-        for (var jogo : sorteios) {
+        for (var jogo : apostas) {
             appender.append(Utils.stringfy(jogo)).append("\n");
         }
         print(titulo, appender);

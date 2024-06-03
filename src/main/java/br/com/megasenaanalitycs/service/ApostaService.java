@@ -1,11 +1,16 @@
-package br.com.megasenaanalitycs;
+package br.com.megasenaanalitycs.service;
 
-import br.com.megasenaanalitycs.repository.Aposta;
-import br.com.megasenaanalitycs.repository.ApostaRepository;
-import br.com.megasenaanalitycs.repository.TipoJogo;
+import br.com.megasenaanalitycs.domain.Aposta;
+import br.com.megasenaanalitycs.domain.ApostaRepository;
+import br.com.megasenaanalitycs.domain.TipoJogo;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static br.com.megasenaanalitycs.utils.Utils.stringfy;
@@ -18,6 +23,8 @@ public class ApostaService {
         this.apostaRepository = apostaRepository;
     }
 
+    private final Random random = new Random();
+
     public List<Aposta> lerApostas(TipoJogo tipoJogo) throws IOException {
         return apostaRepository.lerApostas(tipoJogo);
     }
@@ -28,10 +35,10 @@ public class ApostaService {
 
     public boolean isEstatisticaApostaValida(int[] aposta, int[] frequencias) {
         var count = 0;
-        var maxOccurence = 3;
-        var masxFreq = 3;
+        final var maxOccurence = 3;
+        final var maxFrequencia = 3;
         for (int i = 0; i < aposta.length; i++) {
-            if (frequencias[aposta[i] - 1] >= masxFreq) {
+            if (frequencias[aposta[i] - 1] >= maxFrequencia) {
                 count++;
             }
             if (count >= maxOccurence) {
@@ -92,6 +99,35 @@ public class ApostaService {
         return mensagens;
     }
 
+    public List<int[]> gerarApostasMaximas(TipoJogo tipoJogo, int numeroMaxTentativas) {
+        var apostas = new ArrayList<int[]>();
+        var sorterios = lerSorteiosAnteriores(tipoJogo);
+        var ultimoSorteio = sorterios.get(sorterios.size() - 1);
+        var maxAcertos = 1;
+        var frequenciaSorteios = gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
+        while (numeroMaxTentativas-- >= 0) {
+            var aposta = gerarAposta(tipoJogo);
+            if (isEstatisticaApostaValida(aposta, frequenciaSorteios) && conferirAcertos(aposta, ultimoSorteio) <= maxAcertos) {
+                apostas.add(aposta);
+            }
+        }
+        return apostas;
+    }
+
+    public int conferirAcertos(int[] aposta, int[] sorteio) {
+        int acertos = 0;
+        for (int idxApt = 0; idxApt < aposta.length; idxApt++) {
+            for (int idxSort = 0; idxSort < aposta.length; idxSort++) {
+                if (aposta[idxApt] == sorteio[idxSort]) {
+                    acertos++;
+                    break;
+                }
+            }
+        }
+        return acertos;
+    }
+
+
     public List<String> validarApostas(TipoJogo tipoJogo) throws IOException {
         var apostas = lerApostas(tipoJogo);
         var sorteios = lerSorteiosAnteriores(tipoJogo);
@@ -127,23 +163,28 @@ public class ApostaService {
     }
 
     public List<int[]> gerarApostas(TipoJogo tipoJogo, int numApostas) {
-        var random = new Random();
-        var aposta = new HashSet<Integer>();
         var apostas = new ArrayList<int[]>(numApostas);
-        int num;
         while (numApostas > 0) {
-            do {
-                num = random.nextInt(tipoJogo.total) + 1;
-                if (aposta.contains(num)) {
-                    continue;
-                }
-                aposta.add(num);
-            } while (aposta.size() < tipoJogo.numeros);
-            apostas.add(toSortedArray(aposta));
-            aposta.clear();
+            apostas.add(gerarAposta(tipoJogo));
             numApostas--;
         }
         return apostas;
+    }
+
+    public int[] gerarAposta(TipoJogo tipoJogo) {
+        var aposta = new int[tipoJogo.numeros];
+        var indexSorteados = new boolean[tipoJogo.total];
+        int num;
+        int index = 0;
+        do {
+            num = random.nextInt(tipoJogo.total);
+            if (indexSorteados[num]) {
+                continue;
+            }
+            indexSorteados[num] = true;
+            aposta[index++] = num + 1;
+        } while (index < tipoJogo.numeros);
+        return aposta;
     }
 
     private int[] toSortedArray(Collection<Integer> values) {

@@ -1,8 +1,12 @@
 package br.com.megasenaanalitycs;
 
-import br.com.megasenaanalitycs.repository.Aposta;
-import br.com.megasenaanalitycs.repository.ApostaRepository;
-import br.com.megasenaanalitycs.repository.TipoJogo;
+import br.com.megasenaanalitycs.domain.Aposta;
+import br.com.megasenaanalitycs.domain.ApostaRepository;
+import br.com.megasenaanalitycs.domain.TipoJogo;
+import br.com.megasenaanalitycs.service.ApostaService;
+import br.com.megasenaanalitycs.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,8 +25,9 @@ public class Main {
     private static String option;
     private static TipoJogo tipoJogo;
     private static ApostaService apostaService;
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         apostaService = new ApostaService(new ApostaRepository());
         do {
             if (tipoJogo == null) {
@@ -39,49 +44,56 @@ public class Main {
                 System.out.println("7- Gerar Novas Apostas Estatísticas");
                 System.out.println("8- Gerar Novas Apostas Sem Estatísticas");
                 System.out.println("9- Gerar Frequencia das Apostas");
+                System.out.println("10- Gerar Apostas Maximas");
                 System.out.println("H- Validar Hipotese");
                 System.out.println("S- Sair");
                 System.out.println("*****************");
                 option = scanner.nextLine();
             }
-            switch (option.toUpperCase()) {
-                case ("1"):
-                    escolherTipoJogo();
-                    break;
-                case "2":
-                    printSorteiorAnteriores();
-                    break;
-                case "3":
-                    printConferenciaApostas();
-                    break;
-                case "4":
-                    printValidacaoApostas();
-                    break;
-                case "5":
-                    printFrequenciaUltimosSorteios();
-                    break;
-                case "6":
-                    printFrequenciaTodosSorteios();
-                    break;
-                case "7":
-                    printNovasApostasEstatisticas();
-                    break;
-                case "8":
-                    printNovasApostasSemEstatisticas();
-                    break;
-                case "9":
-                    printFrequenciaApostas();
-                    break;
-                case "H":
-                    printValidacaoHipoteseEstatistica();
-                case "S":
-                    System.out.println("Encerrando...");
-                    break;
-                default:
-                    System.out.println("A opcao \"" + option + "\" Invalida. Tente novamente.");
-                    break;
+            try {
+                switch (option.toUpperCase()) {
+                    case ("1"):
+                        escolherTipoJogo();
+                        break;
+                    case "2":
+                        printSorteiorAnteriores();
+                        break;
+                    case "3":
+                        printConferenciaApostas();
+                        break;
+                    case "4":
+                        printValidacaoApostas();
+                        break;
+                    case "5":
+                        printFrequenciaUltimosSorteios();
+                        break;
+                    case "6":
+                        printFrequenciaTodosSorteios();
+                        break;
+                    case "7":
+                        printNovasApostasEstatisticas();
+                        break;
+                    case "8":
+                        printNovasApostasSemEstatisticas();
+                        break;
+                    case "9":
+                        printFrequenciaApostas();
+                        break;
+                    case "10":
+                        printApostasMaximas();
+                        break;
+                    case "H":
+                        printValidacaoHipoteseEstatistica();
+                    case "S":
+                        System.out.println("Encerrando...");
+                        break;
+                    default:
+                        System.out.println("A opcao \"" + option + "\" Invalida. Tente novamente.");
+                        break;
+                }
+            } catch (Exception e) {
+                log.error("Houve uma falha na operação escolhida=" + option + ". Tente novamente.", e);
             }
-
         } while (!option.equalsIgnoreCase("S"));
         scanner.close();
     }
@@ -120,6 +132,15 @@ public class Main {
         var apostas = apostaService.lerApostas(tipoJogo);
         var frequencia = apostaService.gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         printFrequenciaPorApostas(apostas, frequencia);
+    }
+
+    private static void printApostasMaximas() throws IOException {
+        System.out.println("\n*****************");
+        System.out.println("Digite a quantidade de tentativas desejada");
+        option = scanner.nextLine();
+        var tentativas = Integer.parseInt(option);
+        var apostas = apostaService.gerarApostasMaximas(tipoJogo, tentativas);
+        Utils.print("Apostas Maximas", apostas);
     }
 
     private static void printSorteiorAnteriores() {
@@ -177,7 +198,7 @@ public class Main {
             } else if (acertos >= 6) {
                 addPermiado("sextina", aposta, premiados);
             }
-            System.out.println(aposta + " =>  " + acertos + " acertos");
+            System.out.println(aposta + " => " + acertos + " acertos");
         }
         premiados.forEach((premiacao, listaPremiados) -> {
             System.out.println("******" + premiacao + "******");

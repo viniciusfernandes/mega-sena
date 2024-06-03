@@ -1,4 +1,4 @@
-package br.com.megasenaanalitycs.repository;
+package br.com.megasenaanalitycs.domain;
 
 import br.com.megasenaanalitycs.utils.Utils;
 
