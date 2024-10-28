@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printFrequenciaPorApostas;
 import static br.com.megasenaanalitycs.utils.EstatisticaUtils.printFrequenciaPorSorteio;
@@ -41,12 +41,10 @@ public class Main {
                 System.out.println("4- Validar apostas");
                 System.out.println("5- Gerar Frequencia Ultimos Sorteios");
                 System.out.println("6- Gerar Frequencia Todos Sorteios");
-                System.out.println("7- Gerar Novas Apostas Estatísticas");
-                System.out.println("8- Gerar Novas Apostas Sem Estatísticas");
-                System.out.println("9- Gerar Frequencia das Apostas");
-                System.out.println("10- Gerar Apostas Maximas");
-                System.out.println("H- Validar Hipotese");
-                System.out.println("S- Sair");
+                System.out.println("7- Gerar Frequencia das Apostas");
+                System.out.println("8- Gerar Apostas Maximas");
+                System.out.println("9- Validar Hipotese");
+                System.out.println("q- Sair");
                 System.out.println("*****************");
                 option = scanner.nextLine();
             }
@@ -71,20 +69,14 @@ public class Main {
                         printFrequenciaTodosSorteios();
                         break;
                     case "7":
-                        printNovasApostasEstatisticas();
-                        break;
-                    case "8":
-                        printNovasApostasSemEstatisticas();
-                        break;
-                    case "9":
                         printFrequenciaApostas();
                         break;
-                    case "10":
+                    case "8":
                         printApostasMaximas();
                         break;
-                    case "H":
+                    case "9":
                         printValidacaoHipoteseEstatistica();
-                    case "S":
+                    case "q":
                         System.out.println("Encerrando...");
                         break;
                     default:
@@ -102,20 +94,6 @@ public class Main {
         System.out.println("\n*****************");
         var mensagens = apostaService.validarHipoteseEstatistica(tipoJogo);
         mensagens.forEach(System.err::println);
-    }
-
-    private static void printNovasApostasSemEstatisticas() {
-        System.out.println("\n*****************");
-        System.out.println("Digite a quantidade de apostas");
-        var numeroApostas = Integer.parseInt(scanner.nextLine());
-        print("Apostas sem Estatísticas", apostaService.gerarApostas(tipoJogo, numeroApostas));
-    }
-
-    private static void printNovasApostasEstatisticas() {
-        System.out.println("\n*****************");
-        System.out.println("Digite a quantidade de apostas");
-        var apostas = apostaService.gerarApostas(tipoJogo, 5);
-        print("Apostas sem as Estatísticas", apostas);
     }
 
     private static void printFrequenciaUltimosSorteios() {
@@ -180,26 +158,32 @@ public class Main {
         }
         List<Aposta> apostas = apostaService.lerApostas(tipoJogo);
         var premiados = new HashMap<String, List<String>>();
-        int acertos;
+        int totalAcertos;
+        var acertos = new TreeSet<Integer>();
         for (var aposta : apostas) {
-            acertos = 0;
+            totalAcertos = 0;
             for (int idxApt = 0; idxApt < aposta.totalNumeros; idxApt++) {
                 for (int idxSort = 0; idxSort < sorteados.length; idxSort++) {
                     if (aposta.numeros[idxApt] == sorteados[idxSort]) {
-                        acertos++;
+                        totalAcertos++;
+                        acertos.add(sorteados[idxSort]);
                         break;
                     }
                 }
             }
-            if (acertos == 4) {
+            if (totalAcertos == 4) {
                 addPermiado("quadra", aposta, premiados);
-            } else if (acertos == 5) {
+            } else if (totalAcertos == 5) {
                 addPermiado("quina", aposta, premiados);
-            } else if (acertos >= 6) {
+            } else if (totalAcertos >= 6) {
                 addPermiado("sextina", aposta, premiados);
             }
-            System.out.println(aposta + " => " + acertos + " acertos");
+            System.out.println(aposta + " => " + totalAcertos + " acertos");
         }
+
+        System.out.println("Dezenas acertadas => " + acertos.stream()
+                .map(numero -> numero <= 9 ? "0" + numero : "" + numero)
+                .collect(Collectors.joining(" ")));
         premiados.forEach((premiacao, listaPremiados) -> {
             System.out.println("******" + premiacao + "******");
             for (var premiado : listaPremiados) {
