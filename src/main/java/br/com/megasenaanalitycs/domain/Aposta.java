@@ -12,6 +12,6 @@ public class Aposta {
     }
 
     public String toString() {
-        return apostador + " apostou [" + Utils.stringfy(numeros) + "]";
+        return apostador + " [" + Utils.stringfy(numeros) + "]";
     }
 }

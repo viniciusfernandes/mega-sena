@@ -1,16 +1,9 @@
 package br.com.megasenaanalitycs.service;
 
-import br.com.megasenaanalitycs.domain.Aposta;
-import br.com.megasenaanalitycs.domain.ApostaRepository;
-import br.com.megasenaanalitycs.domain.TipoJogo;
+import br.com.megasenaanalitycs.domain.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static br.com.megasenaanalitycs.utils.Utils.stringfy;
@@ -25,8 +18,13 @@ public class ApostaService {
 
     private final Random random = new Random();
 
-    public List<Aposta> lerApostas(TipoJogo tipoJogo) throws IOException {
-        return apostaRepository.lerApostas(tipoJogo);
+    public List<Apostador> lerApostadores(TipoJogo tipoJogo) throws IOException {
+        return apostaRepository.lerApostadores(tipoJogo);
+    }
+
+    public List<int[]> lerApostas(TipoJogo tipoJogo) throws IOException {
+        var apostadores = apostaRepository.lerApostadores(tipoJogo);
+        return apostadores.stream().flatMap(apostador -> apostador.apostas.stream()).collect(Collectors.toList());
     }
 
     public List<int[]> lerSorteiosAnteriores(TipoJogo tipoJogo) {
@@ -128,38 +126,37 @@ public class ApostaService {
     }
 
 
-    public List<String> validarApostas(TipoJogo tipoJogo) throws IOException {
-        var apostas = lerApostas(tipoJogo);
+    public List<ValidacaoAposta> validarApostas(TipoJogo tipoJogo) throws IOException {
+        var apostadores = lerApostadores(tipoJogo);
         var sorteios = lerSorteiosAnteriores(tipoJogo);
         var frequencias = gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         var repetidas = new ArrayList<int[]>();
 
-        final var REPETIDA = "repetida";
-        final var SORTEADA = "sorteada";
-        final var DESFAVORAVEL = "desfavoravel";
-        var mensagensMap = Map.of(
-                DESFAVORAVEL, new ArrayList<String>(),
-                SORTEADA, new ArrayList<String>(),
-                REPETIDA, new ArrayList<String>());
-        var numAposta = 0;
-        for (var aposta : apostas) {
-            numAposta++;
-            if (contains(sorteios, aposta.numeros)) {
-                mensagensMap.get(SORTEADA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta.numeros) + "] já existe em resultados anteriores");
+        TipoAposta tipoAposta = null;
+        var validacoes = new ArrayList<ValidacaoAposta>();
+        int[] frequencia = null;
+        for (var apostador : apostadores) {
+            var numAposta = 0;
+            for (var aposta : apostador.apostas) {
+                numAposta++;
+                if (contains(sorteios, aposta)) {
+                    tipoAposta = TipoAposta.SORTEADA;
+                } else if (!isEstatisticaApostaValida(aposta, frequencias)) {
+                    frequencia = extrairFrequenciaAposta(aposta, frequencias);
+                    tipoAposta = TipoAposta.DESFAVORAVEL;
+                } else if (contains(repetidas, aposta)) {
+                    tipoAposta = TipoAposta.REPETIDA;
+                } else {
+                    repetidas.add(aposta);
+                }
+                if (tipoAposta != null) {
+                    validacoes.add(new ValidacaoAposta(apostador.nome, aposta, tipoAposta, numAposta, frequencia));
+                }
+                tipoAposta = null;
+                frequencia = null;
             }
-            if (!isEstatisticaApostaValida(aposta.numeros, frequencias)) {
-                var frequencia = extrairFrequenciaAposta(aposta.numeros, frequencias);
-                mensagensMap.get(DESFAVORAVEL).add("A aposta número " + stringfy(numAposta)
-                        + " [" + stringfy(aposta.numeros) + "] não contém uma estatística favorável => " + stringfy(frequencia));
-            }
-            if (contains(repetidas, aposta.numeros)) {
-                mensagensMap.get(REPETIDA).add("A aposta número " + stringfy(numAposta) + " [" + stringfy(aposta.numeros) + "] esta repetida");
-            } else {
-                repetidas.add(aposta.numeros);
-            }
-
         }
-        return mensagensMap.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        return validacoes;
     }
 
     public List<int[]> gerarApostas(TipoJogo tipoJogo, int numApostas) {

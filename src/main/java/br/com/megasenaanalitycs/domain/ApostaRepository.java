@@ -1,5 +1,6 @@
 package br.com.megasenaanalitycs.domain;
 
+import br.com.megasenaanalitycs.utils.Utils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -7,28 +8,25 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 public class ApostaRepository {
     private static final Logger logger = LoggerFactory.getLogger(ApostaRepository.class);
 
-    public List<Aposta> lerApostas(TipoJogo tipoJogo) throws IOException {
+    public List<Apostador> lerApostadores(TipoJogo tipoJogo) throws IOException {
         var apostasFile = new File("src/main/resources/apostas.txt");
         var reader = new BufferedReader(new FileReader(apostasFile));
         String line;
-        var apostas = new ArrayList<Aposta>();
+        var apostadores = new ArrayList<Apostador>();
         String[] numeros;
+
         int lineNum = 0;
-        Aposta aposta;
         String nome = null;
+        Apostador apostador = null;
+        int[] aposta;
         while ((line = reader.readLine()) != null) {
+
             lineNum++;
             try {
                 if (isBlanck(line)) {
@@ -37,17 +35,17 @@ public class ApostaRepository {
 
                 if (isNome(line)) {
                     nome = line;
+                    apostador = new Apostador(nome);
+                    apostadores.add(apostador);
                     continue;
                 }
-                aposta = new Aposta(tipoJogo.numeros);
-                aposta.apostador = nome;
                 numeros = line.split(" ");
-                aposta.numeros = new int[tipoJogo.numeros];
+                aposta = new int[tipoJogo.numeros];
                 for (int i = 0; i < numeros.length; i++) {
-                    aposta.numeros[i] = Integer.parseInt(numeros[i]);
+                    aposta[i] = Integer.parseInt(numeros[i]);
                 }
-                Arrays.sort(aposta.numeros);
-                apostas.add(aposta);
+                Arrays.sort(aposta);
+                apostador.addAposta(aposta);
             } catch (Exception e) {
                 System.err.println("Falha na linha " + lineNum + " => " + line);
                 e.printStackTrace();
@@ -55,7 +53,20 @@ public class ApostaRepository {
             }
         }
         reader.close();
-        return apostas;
+
+//        var conteudoApostas = new StringBuilder();
+//        var apostadores = new HashSet<String>();
+//        for (var aposta : apostadores) {
+//            if (!apostadores.contains(aposta.apostador)) {
+//                conteudoApostas.append("\n").append(aposta.apostador).append("\n");
+//                apostadores.add(aposta.apostador);
+//            }
+//            conteudoApostas.append(Utils.stringfy(aposta.numeros)).append("\n");
+//        }
+//        var writer = new BufferedWriter(new FileWriter(apostasFile));
+//        writer.write(conteudoApostas.toString());
+//        writer.close();
+        return apostadores;
     }
 
 
