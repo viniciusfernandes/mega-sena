@@ -2,7 +2,7 @@ package br.com.megasenaanalitycs.service;
 
 import br.com.megasenaanalitycs.domain.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,6 +77,10 @@ public class ApostaService {
         return frequencias.get(frequencias.size() - 1);
     }
 
+    public void ordernarApostas(TipoJogo tipoJogo) throws IOException {
+        apostaRepository.ordernarApostas(tipoJogo);
+    }
+
     public List<String> validarHipoteseEstatistica(TipoJogo tipoJogo) {
         var mensagens = new ArrayList<String>();
         var frequencias = gerarFrequenciaSorteios(tipoJogo);
@@ -97,7 +101,7 @@ public class ApostaService {
         return mensagens;
     }
 
-    public List<int[]> gerarApostasMaximas(TipoJogo tipoJogo, int numeroMaxTentativas) {
+    public List<int[]> gerarApostas(TipoJogo tipoJogo, int numeroMaxTentativas) {
         var apostas = new ArrayList<int[]>();
         var sorterios = lerSorteiosAnteriores(tipoJogo);
         var ultimoSorteio = sorterios.get(sorterios.size() - 1);
@@ -159,35 +163,6 @@ public class ApostaService {
         return validacoes;
     }
 
-    public List<int[]> gerarApostas(TipoJogo tipoJogo, int numApostas) {
-        var apostas = new ArrayList<int[]>(numApostas);
-        while (numApostas > 0) {
-            apostas.add(gerarAposta(tipoJogo));
-            numApostas--;
-        }
-        return apostas;
-    }
-
-    public int[] gerarAposta(TipoJogo tipoJogo) {
-        var aposta = new int[tipoJogo.numeros];
-        var indexSorteados = new boolean[tipoJogo.total];
-        int num;
-        int index = 0;
-        do {
-            num = random.nextInt(tipoJogo.total);
-            if (indexSorteados[num]) {
-                continue;
-            }
-            indexSorteados[num] = true;
-            aposta[index++] = num + 1;
-        } while (index < tipoJogo.numeros);
-        return aposta;
-    }
-
-    private int[] toSortedArray(Collection<Integer> values) {
-        return values.stream().mapToInt(Integer::intValue).sorted().toArray();
-    }
-
     private boolean contains(Collection<int[]> sorteios, int[] aposta) {
         for (var sorteio : sorteios) {
             if (Arrays.equals(sorteio, aposta)) {
@@ -203,5 +178,21 @@ public class ApostaService {
             freq[i] = frequencias[aposta[i] - 1];
         }
         return freq;
+    }
+
+    private int[] gerarAposta(TipoJogo tipoJogo) {
+        var aposta = new int[tipoJogo.numeros];
+        var indexSorteados = new boolean[tipoJogo.total];
+        int num;
+        int index = 0;
+        do {
+            num = random.nextInt(tipoJogo.total);
+            if (indexSorteados[num]) {
+                continue;
+            }
+            indexSorteados[num] = true;
+            aposta[index++] = num + 1;
+        } while (index < tipoJogo.numeros);
+        return aposta;
     }
 }

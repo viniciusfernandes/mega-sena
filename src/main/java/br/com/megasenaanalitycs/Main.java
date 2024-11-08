@@ -36,6 +36,7 @@ public class Main {
                 System.out.println("7- Gerar Frequencia das Apostas");
                 System.out.println("8- Gerar Apostas");
                 System.out.println("9- Validar Hipotese");
+                System.out.println("10- Ordernar Apostas");
                 System.out.println("q- Sair");
                 System.out.println("*****************");
                 option = scanner.nextLine();
@@ -68,6 +69,8 @@ public class Main {
                         break;
                     case "9":
                         printValidacaoHipoteseEstatistica();
+                    case "10":
+                        printOrdenacaoApostas();
                     case "q":
                         System.out.println("Encerrando...");
                         break;
@@ -80,6 +83,13 @@ public class Main {
             }
         } while (!option.equalsIgnoreCase("S"));
         scanner.close();
+    }
+
+    private static void printOrdenacaoApostas() throws IOException {
+        System.out.println("\n*****************");
+        apostaService.ordernarApostas(tipoJogo);
+        System.out.println("\nApostas Ordenadas");
+        System.out.println("\n*****************");
     }
 
     private static void printValidacaoHipoteseEstatistica() {
@@ -105,12 +115,12 @@ public class Main {
         printFrequenciaPorApostas(apostas, frequencia);
     }
 
-    private static void printApostasMaximas() throws IOException {
+    private static void printApostasMaximas() {
         System.out.println("\n*****************");
         System.out.println("Digite a quantidade de tentativas desejada");
         option = scanner.nextLine();
         var tentativas = Integer.parseInt(option);
-        var apostas = apostaService.gerarApostasMaximas(tipoJogo, tentativas);
+        var apostas = apostaService.gerarApostas(tipoJogo, tentativas);
         Utils.print("Apostas Maximas", apostas);
     }
 

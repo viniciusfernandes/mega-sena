@@ -1,28 +1,23 @@
 package br.com.megasenaanalitycs.domain;
 
 import br.com.megasenaanalitycs.utils.Utils;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 import java.io.*;
 import java.util.*;
 
 public class ApostaRepository {
     private static final Logger logger = LoggerFactory.getLogger(ApostaRepository.class);
+    private final File apostasFile = new File("src/main/resources/apostas.txt");
 
     public List<Apostador> lerApostadores(TipoJogo tipoJogo) throws IOException {
-        var apostasFile = new File("src/main/resources/apostas.txt");
         var reader = new BufferedReader(new FileReader(apostasFile));
         String line;
         var apostadores = new ArrayList<Apostador>();
         String[] numeros;
-
         int lineNum = 0;
-        String nome = null;
         Apostador apostador = null;
         int[] aposta;
         while ((line = reader.readLine()) != null) {
@@ -32,10 +27,8 @@ public class ApostaRepository {
                 if (isBlanck(line)) {
                     continue;
                 }
-
                 if (isNome(line)) {
-                    nome = line;
-                    apostador = new Apostador(nome);
+                    apostador = new Apostador(line);
                     apostadores.add(apostador);
                     continue;
                 }
@@ -53,20 +46,21 @@ public class ApostaRepository {
             }
         }
         reader.close();
-
-//        var conteudoApostas = new StringBuilder();
-//        var apostadores = new HashSet<String>();
-//        for (var aposta : apostadores) {
-//            if (!apostadores.contains(aposta.apostador)) {
-//                conteudoApostas.append("\n").append(aposta.apostador).append("\n");
-//                apostadores.add(aposta.apostador);
-//            }
-//            conteudoApostas.append(Utils.stringfy(aposta.numeros)).append("\n");
-//        }
-//        var writer = new BufferedWriter(new FileWriter(apostasFile));
-//        writer.write(conteudoApostas.toString());
-//        writer.close();
         return apostadores;
+    }
+
+    public void ordernarApostas(TipoJogo tipoJogo) throws IOException {
+        var apostadores = lerApostadores(tipoJogo);
+        var conteudoApostas = new StringBuilder();
+        for (var apostador : apostadores) {
+            conteudoApostas.append("\n").append(apostador.nome).append("\n");
+            for (var aposta : apostador.apostas) {
+                conteudoApostas.append(Utils.stringfy(aposta)).append("\n");
+            }
+        }
+        var writer = new BufferedWriter(new FileWriter(apostasFile));
+        writer.write(conteudoApostas.toString());
+        writer.close();
     }
 
 
