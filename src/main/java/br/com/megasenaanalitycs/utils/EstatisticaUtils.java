@@ -1,35 +1,12 @@
 package br.com.megasenaanalitycs.utils;
 
-import br.com.megasenaanalitycs.domain.Aposta;
 import br.com.megasenaanalitycs.domain.TipoJogo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static br.com.megasenaanalitycs.utils.Utils.stringfy;
 
 public class EstatisticaUtils {
-
-    public static List<int[]> gerarApostasAleatorias(int totalApostas) {
-        var apostas = new ArrayList<int[]>();
-        int[] aposta = null;
-        boolean ok = false;
-        int j = 0;
-        for (int i = 0; i < totalApostas; i++) {
-            aposta = new int[6];
-            j = 0;
-            do {
-                aposta[j] = (int) Math.ceil(Math.random() * 61);
-                j++;
-                ok = j > 5;
-            } while (!ok);
-            Arrays.sort(aposta);
-            apostas.add(aposta);
-        }
-        return apostas;
-    }
-
     public static void printPorFrequenciaMaxima(int[] frequencias, int frequenciaLimite) {
         var freq = new StringBuilder();
         var num = new StringBuilder();
@@ -53,10 +30,10 @@ public class EstatisticaUtils {
         var freq = "";
         for (var aposta : apostas) {
             for (int i = 0; i < aposta.length; i++) {
-                ap += stringfy(aposta [i]) + " ";
+                ap += stringfy(aposta[i]) + " ";
             }
             for (int i = 0; i < aposta.length; i++) {
-                freq += stringfy(frequencia[aposta [i] - 1]) + " ";
+                freq += stringfy(frequencia[aposta[i] - 1]) + " ";
             }
             System.out.println(ap + "\n" + freq + "\n");
             ap = "";
@@ -103,7 +80,7 @@ public class EstatisticaUtils {
     public static void printFrequenciaNumerosSorteados(List<int[]> sorteios, List<int[]> blocosFrequencias, int tamanhoBloco) {
         int[] frequencias;
         int[] numerosSorteados;
-        int idxNumero  ;
+        int idxNumero;
         StringBuilder saida = new StringBuilder();
         int idxPenultimoBloco = blocosFrequencias.size() - 2;
         for (int idxBloco = 0, idxSort = tamanhoBloco; idxBloco <= idxPenultimoBloco; idxBloco++, idxSort++) {

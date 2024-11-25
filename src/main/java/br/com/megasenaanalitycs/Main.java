@@ -65,7 +65,7 @@ public class Main {
                         printFrequenciaApostas();
                         break;
                     case "8":
-                        printApostasMaximas();
+                        printApostasGeradas();
                         break;
                     case "9":
                         printValidacaoHipoteseEstatistica();
@@ -115,13 +115,13 @@ public class Main {
         printFrequenciaPorApostas(apostas, frequencia);
     }
 
-    private static void printApostasMaximas() {
+    private static void printApostasGeradas() {
         System.out.println("\n*****************");
         System.out.println("Digite a quantidade de tentativas desejada");
         option = scanner.nextLine();
         var tentativas = Integer.parseInt(option);
         var apostas = apostaService.gerarApostas(tipoJogo, tentativas);
-        Utils.print("Apostas Maximas", apostas);
+        Utils.print("Apostas Geradas", apostas);
     }
 
     private static void printSorteiorAnteriores() {
