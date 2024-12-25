@@ -97,7 +97,7 @@ public class ApostaRepository {
     }
 
     private boolean isNome(String line) {
-        return line.matches("[A-Z]*[a-z]+");
+        return line.trim().charAt(0) >= 'A' && line.trim().charAt(0) <= 'z';
     }
 }
 

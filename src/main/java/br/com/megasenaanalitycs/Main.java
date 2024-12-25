@@ -17,7 +17,6 @@ public class Main {
     private static String option;
     private static TipoJogo tipoJogo;
     private static ApostaService apostaService;
-    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         apostaService = new ApostaService(new ApostaRepository());
@@ -79,7 +78,8 @@ public class Main {
                         break;
                 }
             } catch (Exception e) {
-                log.error("Houve uma falha na operação escolhida=" + option + ". Tente novamente.", e);
+                System.err.println("Houve uma falha na operação escolhida=" + option + ". Tente novamente.");
+                e.printStackTrace();
             }
         } while (!option.equalsIgnoreCase("S"));
         scanner.close();
@@ -152,8 +152,13 @@ public class Main {
             } else if (TipoAposta.DESFAVORAVEL == validacao.tipoAposta) {
                 mensagem += " não contém uma estatística favorável => " + Utils.stringfy(validacao.frequencia);
             } else if (TipoAposta.REPETIDA == validacao.tipoAposta) {
-                mensagem += "  esta repetida";
+                mensagem += " esta repetida";
+            } else if (TipoAposta.NUMERO_REPETIDO == validacao.tipoAposta) {
+                mensagem += " contem numero repetido";
+            } else if (TipoAposta.NUMERO_INVALIDO == validacao.tipoAposta) {
+                mensagem += " contem numero ivalido";
             }
+
             mensagem += "\n";
         }
         if (mensagem.isBlank()) {

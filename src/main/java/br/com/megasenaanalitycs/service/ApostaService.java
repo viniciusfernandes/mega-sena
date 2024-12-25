@@ -136,27 +136,32 @@ public class ApostaService {
         var frequencias = gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         var repetidas = new ArrayList<int[]>();
 
-        TipoAposta tipoAposta = null;
         var validacoes = new ArrayList<ValidacaoAposta>();
         int[] frequencia = null;
         for (var apostador : apostadores) {
             var numAposta = 0;
             for (var aposta : apostador.apostas) {
                 numAposta++;
-                if (contains(sorteios, aposta)) {
-                    tipoAposta = TipoAposta.SORTEADA;
-                } else if (!isEstatisticaApostaValida(aposta, frequencias)) {
-                    frequencia = extrairFrequenciaAposta(aposta, frequencias);
-                    tipoAposta = TipoAposta.DESFAVORAVEL;
-                } else if (contains(repetidas, aposta)) {
-                    tipoAposta = TipoAposta.REPETIDA;
+                if (contains(repetidas, aposta)) {
+                    validacoes.add(new ValidacaoAposta(apostador.nome, aposta, TipoAposta.REPETIDA, numAposta, frequencia));
                 } else {
                     repetidas.add(aposta);
                 }
-                if (tipoAposta != null) {
-                    validacoes.add(new ValidacaoAposta(apostador.nome, aposta, tipoAposta, numAposta, frequencia));
+                if (hasNumeroInvalido(aposta, tipoJogo)) {
+                    validacoes.add(new ValidacaoAposta(apostador.nome, aposta, TipoAposta.NUMERO_INVALIDO, numAposta, frequencia));
+                    break;
                 }
-                tipoAposta = null;
+                if (contains(sorteios, aposta)) {
+                    validacoes.add(new ValidacaoAposta(apostador.nome, aposta, TipoAposta.SORTEADA, numAposta, frequencia));
+                }
+                if (!isEstatisticaApostaValida(aposta, frequencias)) {
+                    frequencia = extrairFrequenciaAposta(aposta, frequencias);
+                    validacoes.add(new ValidacaoAposta(apostador.nome, aposta, TipoAposta.DESFAVORAVEL, numAposta, frequencia));
+                }
+                if (hasNumerosRepetidos(aposta)) {
+                    validacoes.add(new ValidacaoAposta(apostador.nome, aposta, TipoAposta.NUMERO_REPETIDO, numAposta, frequencia));
+                }
+
                 frequencia = null;
             }
         }
@@ -194,5 +199,25 @@ public class ApostaService {
             aposta[index++] = num + 1;
         } while (index < tipoJogo.numeros);
         return aposta;
+    }
+
+    private boolean hasNumerosRepetidos(int[] aposta) {
+        var numeros = new HashSet<Integer>();
+        for (var num : aposta) {
+            if (numeros.contains(num)) {
+                return true;
+            }
+            numeros.add(num);
+        }
+        return false;
+    }
+
+    private boolean hasNumeroInvalido(int[] aposta, TipoJogo tipoJogo) {
+        for (var num : aposta) {
+            if (num < 1 || num > tipoJogo.total) {
+                return true;
+            }
+        }
+        return false;
     }
 }
