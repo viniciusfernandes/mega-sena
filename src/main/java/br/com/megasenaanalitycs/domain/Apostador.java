@@ -20,9 +20,13 @@ public class Apostador {
         int[] melhorAposta = null;
         for (var aposta : apostas) {
             var acerto = new ArrayList<Integer>();
-            for (int i = 0; i < sorteados.length; i++) {
-                if (aposta[i] == sorteados[i]) {
-                    acerto.add(sorteados[i]);
+
+            for (int j = 0; j < aposta.length; j++) {
+                for (int i = 0; i < sorteados.length; i++) {
+                    if (aposta[j] == sorteados[i]) {
+                        acerto.add(sorteados[i]);
+                        break;
+                    }
                 }
             }
             if (melhorAcerto == null || melhorAcerto.size() < acerto.size()) {

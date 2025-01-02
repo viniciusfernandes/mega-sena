@@ -145,8 +145,16 @@ public class Main {
     private static void printValidacaoApostas() throws IOException {
         var validacoes = apostaService.validarApostas(tipoJogo);
         String mensagem = "";
+        var maxLength = 0;
         for (var validacao : validacoes) {
-            mensagem += validacao.nome + " => Aposta (" + Utils.stringfy(validacao.numeroAposta) + ") [" + Utils.stringfy(validacao.aposta) + "]";
+            if (maxLength < validacao.nome.length()) {
+                maxLength = validacao.nome.length();
+            }
+        }
+
+        for (var validacao : validacoes) {
+            mensagem += gerarNomeComEspacamento(maxLength, validacao.nome) +
+                    " => Aposta (" + Utils.stringfy(validacao.numeroAposta) + ") [" + Utils.stringfy(validacao.aposta) + "]";
             if (TipoAposta.SORTEADA == validacao.tipoAposta) {
                 mensagem += " já existe em resultados anteriores";
             } else if (TipoAposta.DESFAVORAVEL == validacao.tipoAposta) {
@@ -168,6 +176,14 @@ public class Main {
         }
     }
 
+    private static String gerarNomeComEspacamento(int maxLengh, String nome) {
+        String space = "";
+        for (int i = maxLengh - nome.length(); i > 0; i--) {
+            space += " ";
+        }
+        return nome + space;
+    }
+
     private static void printConferenciaApostas() throws IOException {
         System.out.println("\n*****************");
         System.out.println("Digite os numeros Sorteados");
@@ -179,7 +195,6 @@ public class Main {
         var apostadores = apostaService.lerApostadores(tipoJogo);
         var premiados = new HashMap<String, List<String>>();
         var acertos = new TreeSet<Integer>();
-        Arrays.sort(sorteados);
         for (var apostador : apostadores) {
             var melhorAcerto = apostador.verificarApostas(sorteados);
             var apostasEAcertos = apostador.getApostasEAcertos();
