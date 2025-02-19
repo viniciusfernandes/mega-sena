@@ -52,6 +52,10 @@ public class Utils {
     }
 
     public static void print(String titulo, StringBuilder resultados) {
+       print(titulo, resultados.toString());
+    }
+
+    public static void print(String titulo, String  resultados) {
         final var stars = "********************************\n";
         StringBuilder s = new StringBuilder();
         s.append(stars);

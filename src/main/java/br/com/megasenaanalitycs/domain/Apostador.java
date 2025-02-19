@@ -45,4 +45,19 @@ public class Apostador {
         }
         return apostasEacertos;
     }
+
+    public void ordernarApostas() {
+        if (apostas == null || apostas.isEmpty()) {
+            return;
+        }
+        apostas.sort((int[] a, int[] b) -> {
+            for (int i = 0; i < a.length; i++) {
+                if (a[i] == b[i]) {
+                    continue;
+                }
+                return Integer.compare(a[i], b[i]);
+            }
+            return 0;
+        });
+    }
 }

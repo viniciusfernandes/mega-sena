@@ -3,10 +3,10 @@ package br.com.megasenaanalitycs;
 import br.com.megasenaanalitycs.domain.*;
 import br.com.megasenaanalitycs.service.ApostaService;
 import br.com.megasenaanalitycs.utils.Utils;
-import org.slf4j.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static br.com.megasenaanalitycs.utils.EstatisticaUtils.*;
 import static br.com.megasenaanalitycs.utils.Utils.print;
@@ -36,12 +36,14 @@ public class Main {
                 System.out.println("8- Gerar Apostas");
                 System.out.println("9- Validar Hipotese");
                 System.out.println("10- Ordernar Apostas");
+                System.out.println("11- Quantidade de Apostas e Apostadores");
+                System.out.println("12- Nomes dos Apostadores");
                 System.out.println("q- Sair");
                 System.out.println("*****************");
                 option = scanner.nextLine();
             }
             try {
-                switch (option.toUpperCase()) {
+                switch (option) {
                     case ("1"):
                         escolherTipoJogo();
                         break;
@@ -68,11 +70,19 @@ public class Main {
                         break;
                     case "9":
                         printValidacaoHipoteseEstatistica();
+                        break;
                     case "10":
                         printOrdenacaoApostas();
+                        break;
+                    case "11":
+                        printVerificarQuantidadeApostasEApostadores();
+                        break;
+                    case "12":
+                        printApostadores();
+                        break;
                     case "q":
                         System.out.println("Encerrando...");
-                        break;
+                        return;
                     default:
                         System.out.println("A opcao \"" + option + "\" Invalida. Tente novamente.");
                         break;
@@ -90,6 +100,15 @@ public class Main {
         apostaService.ordernarApostas(tipoJogo);
         System.out.println("\nApostas Ordenadas");
         System.out.println("\n*****************");
+    }
+
+    private static void printVerificarQuantidadeApostasEApostadores() throws IOException {
+        System.out.println("\n*****************");
+        var apostadores = apostaService.lerApostadores(tipoJogo);
+        var totalApostas = apostadores.stream().mapToInt(apostador -> apostador.apostas.size()).sum();
+        var total = "Apostadores=" + apostadores.size() + "\nApostas=" + totalApostas + "\n";
+        print("Total de Apostadores e Apostas", total);
+        System.out.println("*****************");
     }
 
     private static void printValidacaoHipoteseEstatistica() {
@@ -126,6 +145,17 @@ public class Main {
 
     private static void printSorteiorAnteriores() {
         print("Sorteios Anteriores", apostaService.lerSorteiosAnteriores(tipoJogo));
+    }
+
+    private static void printApostadores() throws IOException {
+        var nomesApostadores = new StringBuilder();
+        var apostadores = apostaService.lerApostadores(tipoJogo)
+                .stream()
+                .map(apostador -> apostador.nome)
+                .sorted()
+                .collect(Collectors.toList());
+        apostadores.forEach(nomeApostador -> nomesApostadores.append(nomeApostador).append("\n"));
+        print("Apostadores (total=" + apostadores.size() + "):", nomesApostadores);
     }
 
     private static void escolherTipoJogo() {
@@ -194,14 +224,16 @@ public class Main {
         }
         var apostadores = apostaService.lerApostadores(tipoJogo);
         var premiados = new HashMap<String, List<String>>();
-        var acertos = new TreeSet<Integer>();
+        var acertos = new int[tipoJogo.numeros + 1];
+        var dezenas = new HashSet<Integer>();
         for (var apostador : apostadores) {
             var melhorAcerto = apostador.verificarApostas(sorteados);
             var apostasEAcertos = apostador.getApostasEAcertos();
             System.out.println("\nApostador: " + apostador.nome);
             for (var apostaEAcerto : apostasEAcertos) {
                 System.out.println(Utils.stringfy(apostaEAcerto.aposta) + " => " + apostaEAcerto.acerto.size() + " acertos => " + apostaEAcerto.acerto);
-                acertos.addAll(apostaEAcerto.acerto);
+                acertos[apostaEAcerto.acerto.size()] += 1;
+                dezenas.addAll(apostaEAcerto.acerto);
             }
 
             if (melhorAcerto.totalAcerto() == 4) {
@@ -214,7 +246,7 @@ public class Main {
 
         }
 
-        System.out.println("\nDezenas acertadas => " + Utils.stringfy(acertos.stream().mapToInt(Integer::intValue).toArray()));
+        System.out.println("\nDezenas acertadas => " + Utils.stringfy(dezenas.stream().mapToInt(Integer::intValue).toArray()));
         System.out.println("\n****** PREMIACAO ******");
         premiados.forEach((premiacao, listaPremiados) -> {
             System.out.println("******" + premiacao + "******");
@@ -222,6 +254,10 @@ public class Main {
                 System.out.println(premiado);
             }
         });
+        System.out.println("\n****** ESTATISTICA ******");
+        for (int i = 0; i < acertos.length; i++) {
+            System.out.println("Total de apostas com \"" + i + "\" acertos=" + acertos[i]);
+        }
     }
 
     private static void addPermiado(String premiacao, ApostaEAcerto acertoAposta, HashMap<String, List<String>> premiadosMap) {

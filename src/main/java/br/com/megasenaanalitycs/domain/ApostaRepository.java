@@ -33,6 +33,9 @@ public class ApostaRepository {
                     continue;
                 }
                 numeros = line.split(" ");
+                if (numeros.length != tipoJogo.numeros) {
+                    throw new IllegalArgumentException("A aposta nao contem o total de numeros necessarios, que eh de=" + tipoJogo.numeros + "e foi enviado=" + numeros.length);
+                }
                 aposta = new int[tipoJogo.numeros];
                 for (int i = 0; i < numeros.length; i++) {
                     aposta[i] = Integer.parseInt(numeros[i]);
@@ -53,6 +56,7 @@ public class ApostaRepository {
         var apostadores = lerApostadores(tipoJogo);
         var conteudoApostas = new StringBuilder();
         for (var apostador : apostadores) {
+            apostador.ordernarApostas();
             conteudoApostas.append("\n").append(apostador.nome).append("\n");
             for (var aposta : apostador.apostas) {
                 conteudoApostas.append(Utils.stringfy(aposta)).append("\n");
@@ -62,6 +66,7 @@ public class ApostaRepository {
         writer.write(conteudoApostas.toString());
         writer.close();
     }
+
 
 
     public List<int[]> lerSorteiosAnteriores(TipoJogo tipoJogo) {

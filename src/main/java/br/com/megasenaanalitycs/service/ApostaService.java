@@ -2,7 +2,7 @@ package br.com.megasenaanalitycs.service;
 
 import br.com.megasenaanalitycs.domain.*;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,15 +31,13 @@ public class ApostaService {
         return apostaRepository.lerSorteiosAnteriores(tipoJogo);
     }
 
-    public boolean isEstatisticaApostaValida(int[] aposta, int[] frequencias) {
+    public boolean isEstatisticaApostaValida(int[] aposta, int[] frequencias, TipoJogo tipoJogo) {
         var count = 0;
-        final var maxOccurence = 3;
-        final var maxFrequencia = 3;
         for (int i = 0; i < aposta.length; i++) {
-            if (frequencias[aposta[i] - 1] >= maxFrequencia) {
+            if (frequencias[aposta[i] - 1] >= tipoJogo.frequenciaMaxima) {
                 count++;
             }
-            if (count >= maxOccurence) {
+            if (count >= tipoJogo.ocorrenciaMaxima) {
                 return false;
             }
         }
@@ -90,7 +88,7 @@ public class ApostaService {
         for (int i = primeiraFreq, j = sorteios.size() - 1; i >= primeiraFreq - total; i--, j--) {
             var frequencia = frequencias.get(i);
             var aposta = sorteios.get(j);
-            if (!isEstatisticaApostaValida(aposta, frequencia)) {
+            if (!isEstatisticaApostaValida(aposta, frequencia, tipoJogo)) {
                 var frequenciaAposta = extrairFrequenciaAposta(aposta, frequencia);
                 mensagens.add("A aposta número " + stringfy(j) +
                         " [" + stringfy(aposta) + "] não contém uma estatística favorável => " +
@@ -109,7 +107,8 @@ public class ApostaService {
         var frequenciaSorteios = gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         while (numeroMaxTentativas-- >= 0) {
             var aposta = gerarAposta(tipoJogo);
-            if (isEstatisticaApostaValida(aposta, frequenciaSorteios) && conferirAcertos(aposta, ultimoSorteio) <= maxAcertos) {
+            if (isEstatisticaApostaValida(aposta, frequenciaSorteios, tipoJogo) &&
+                    conferirAcertos(aposta, ultimoSorteio) <= maxAcertos) {
                 apostas.add(aposta);
             }
         }
@@ -154,7 +153,7 @@ public class ApostaService {
                 if (contains(sorteios, aposta)) {
                     validacoes.add(new ValidacaoAposta(apostador.nome, aposta, TipoAposta.SORTEADA, numAposta, frequencia));
                 }
-                if (!isEstatisticaApostaValida(aposta, frequencias)) {
+                if (!isEstatisticaApostaValida(aposta, frequencias, tipoJogo)) {
                     frequencia = extrairFrequenciaAposta(aposta, frequencias);
                     validacoes.add(new ValidacaoAposta(apostador.nome, aposta, TipoAposta.DESFAVORAVEL, numAposta, frequencia));
                 }
