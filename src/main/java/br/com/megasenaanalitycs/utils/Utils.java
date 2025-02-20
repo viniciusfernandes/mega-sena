@@ -24,14 +24,35 @@ public class Utils {
 
     public static void printFrequenciaNumeros(int[] frequencia) {
         StringBuilder saida = new StringBuilder();
-        int num = 0;
+        int maior = -1;
         for (int i = 0; i < frequencia.length; i++) {
-            num = i + 1;
-            if (num <= 9) {
+            if (maior < frequencia[i]) {
+                maior = frequencia[i];
+            }
+        }
+        int space = String.valueOf(maior).length() - 2;
+        String blankSpace = " ";
+        if (space > 0) {
+            for (int i = 0; i < space; i++) {
+                blankSpace += " ";
+            }
+        }
+
+
+        for (int i = 0; i < frequencia.length; i++) {
+            if (i <= 9) {
                 saida.append(0);
             }
-            saida.append(num).append("=").append(frequencia[i]).append("\n");
+            saida.append(i).append(blankSpace);
         }
+        saida.append("\n");
+        for (int i = 0; i < frequencia.length; i++) {
+            if (frequencia[i] <= 9) {
+                saida.append(0);
+            }
+            saida.append(frequencia[i]).append(" ");
+        }
+        saida.append("\n");
         print("Frequencia dos Numeros", saida);
     }
 
@@ -52,10 +73,10 @@ public class Utils {
     }
 
     public static void print(String titulo, StringBuilder resultados) {
-       print(titulo, resultados.toString());
+        print(titulo, resultados.toString());
     }
 
-    public static void print(String titulo, String  resultados) {
+    public static void print(String titulo, String resultados) {
         final var stars = "********************************\n";
         StringBuilder s = new StringBuilder();
         s.append(stars);
