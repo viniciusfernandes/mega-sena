@@ -1,6 +1,6 @@
 package br.com.megasenaanalitycs.utils;
 
-import br.com.megasenaanalitycs.domain.TipoJogo;
+import br.com.megasenaanalitycs.domain.*;
 
 import java.util.List;
 
@@ -20,8 +20,33 @@ public class EstatisticaUtils {
         Utils.print("Frequência dos Números Sorteados", num);
     }
 
+    public static void printPorFrequenciaMaxima(FrequenciasPorBloco frequenciasPorBloco, int frequenciaLimite) {
+        var output = new StringBuilder();
+        var header = new StringBuilder();
+        header.append("Dezena Freq. Pos. Bloco\n");
+        var frequencias = frequenciasPorBloco.frequencias;
+        for (int i = 0; i < frequencias.length; i++) {
+            var dezena = i + 1;
+             if (frequencias[i] <= frequenciaLimite) {
+                output
+                        .append(dezena<= 9 ? "0" + (dezena) : dezena).append(" ")
+                        .append("    ").append(frequencias[i])
+                        .append("     ")
+                        .append(frequenciasPorBloco.posicoesNoBloco[i]).append("\n");
+            } else {
+                throw new IllegalStateException();
+            }
+        }
+        header.append(output);
+        Utils.print("Frequência dos Números Sorteados", header);
+    }
+
     public static void printNumeroPorFrequencia(int[] frequencias) {
         printPorFrequenciaMaxima(frequencias, 1000);
+    }
+
+    public static void printNumeroPorFrequencia(FrequenciasPorBloco frequenciasPorBloco) {
+        printPorFrequenciaMaxima(frequenciasPorBloco, 1000);
     }
 
 
@@ -115,7 +140,7 @@ public class EstatisticaUtils {
     public static void gerarVelocidadesDistribuicoes(TipoJogo tipoJogo, List<int[]> distribuicoes) {
         int[] distribuicaoAnterior = distribuicoes.get(0);
         int[] distribuicao;
-        int[][] velocidades = new int[tipoJogo.total][distribuicoes.size()];
+        int[][] velocidades = new int[tipoJogo.maiorDezena][distribuicoes.size()];
         int velocidade;
         for (int idxDist = 1; idxDist < distribuicoes.size(); idxDist++) {
             distribuicao = distribuicoes.get(idxDist);

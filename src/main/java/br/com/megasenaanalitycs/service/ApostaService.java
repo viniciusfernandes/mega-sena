@@ -10,7 +10,7 @@ import static br.com.megasenaanalitycs.utils.Utils.stringfy;
 
 public class ApostaService {
     private final ApostaRepository apostaRepository;
-    private static final int TAMANHO_BLOCCO_FREQUENCIA = 24;
+    private static final int QUANTIDADE_SORTEIOS_PARA_FREQUENCIA = 24;
 
     public ApostaService(ApostaRepository apostaRepository) {
         this.apostaRepository = apostaRepository;
@@ -44,34 +44,41 @@ public class ApostaService {
         return true;
     }
 
-    public List<int[]> gerarFrequenciaSorteios(TipoJogo tipoJogo) {
+    public List<int[]> gerarFrequenciasSorteio(TipoJogo tipoJogo) {
+        return gerarFrequenciasPorBloco(tipoJogo).stream()
+                .map(bloco -> bloco.frequencias)
+                .collect(Collectors.toList());
+    }
+
+    public List<FrequenciasPorBloco> gerarFrequenciasPorBloco(TipoJogo tipoJogo) {
         var sorteios = lerSorteiosAnteriores(tipoJogo);
-        var tamanhoBloco = TAMANHO_BLOCCO_FREQUENCIA;
+        var tamanhoBloco = QUANTIDADE_SORTEIOS_PARA_FREQUENCIA;
         if (tamanhoBloco > sorteios.size()) {
             tamanhoBloco = sorteios.size();
         }
-        int lastIdx = sorteios.size() - tamanhoBloco;
+        int totalBlocos = sorteios.size() - tamanhoBloco + 1;
         List<int[]> blocoSorteios;
-        List<int[]> frequencias = new ArrayList<>();
-        int[] frequencia;
+        List<FrequenciasPorBloco> frequencias = new ArrayList<>();
         int idx;
-        for (int idxBloco = 0; idxBloco <= lastIdx; idxBloco++) {
+        for (int numBloco = 1; numBloco <= totalBlocos; numBloco++) {
+            int idxBloco = numBloco - 1;
             blocoSorteios = sorteios.subList(idxBloco, idxBloco + tamanhoBloco);
-            frequencia = new int[tipoJogo.total];
-
+            var frequenciaPorBloco = new FrequenciasPorBloco(numBloco, numBloco + tamanhoBloco -1, tipoJogo);
+            var posicaoNoBloco = 1;
             for (int[] sorteio : blocoSorteios) {
                 for (int i = 0; i < sorteio.length; i++) {
                     idx = sorteio[i] - 1;
-                    frequencia[idx]++;
+                    frequenciaPorBloco.adicionarFrequencia(idx, posicaoNoBloco);
                 }
+                posicaoNoBloco++;
             }
-            frequencias.add(frequencia);
+            frequencias.add(frequenciaPorBloco);
         }
         return frequencias;
     }
 
     public int[] gerarUltimoBlocoFrequenciaSorteios(TipoJogo tipoJogo) {
-        var frequencias = gerarFrequenciaSorteios(tipoJogo);
+        var frequencias = gerarFrequenciasSorteio(tipoJogo);
         return frequencias.get(frequencias.size() - 1);
     }
 
@@ -81,7 +88,7 @@ public class ApostaService {
 
     public List<String> validarHipoteseEstatistica(TipoJogo tipoJogo) {
         var mensagens = new ArrayList<String>();
-        var frequencias = gerarFrequenciaSorteios(tipoJogo);
+        var frequencias = gerarFrequenciasSorteio(tipoJogo);
         var sorteios = lerSorteiosAnteriores(tipoJogo);
         var primeiraFreq = frequencias.size() - 2;
         var total = 50;
@@ -185,18 +192,18 @@ public class ApostaService {
     }
 
     private int[] gerarAposta(TipoJogo tipoJogo) {
-        var aposta = new int[tipoJogo.numeros];
-        var indexSorteados = new boolean[tipoJogo.total];
+        var aposta = new int[tipoJogo.quantidadeNumeros];
+        var indexSorteados = new boolean[tipoJogo.maiorDezena];
         int num;
         int index = 0;
         do {
-            num = random.nextInt(tipoJogo.total);
+            num = random.nextInt(tipoJogo.maiorDezena);
             if (indexSorteados[num]) {
                 continue;
             }
             indexSorteados[num] = true;
             aposta[index++] = num + 1;
-        } while (index < tipoJogo.numeros);
+        } while (index < tipoJogo.quantidadeNumeros);
         return aposta;
     }
 
@@ -213,7 +220,7 @@ public class ApostaService {
 
     private boolean hasNumeroInvalido(int[] aposta, TipoJogo tipoJogo) {
         for (var num : aposta) {
-            if (num < 1 || num > tipoJogo.total) {
+            if (num < 1 || num > tipoJogo.maiorDezena) {
                 return true;
             }
         }

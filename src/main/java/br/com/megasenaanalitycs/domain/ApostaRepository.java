@@ -33,10 +33,10 @@ public class ApostaRepository {
                     continue;
                 }
                 numeros = line.split(" ");
-                if (numeros.length != tipoJogo.numeros) {
-                    throw new IllegalArgumentException("A aposta nao contem o total de numeros necessarios, que eh de=" + tipoJogo.numeros + "e foi enviado=" + numeros.length);
+                if (numeros.length != tipoJogo.quantidadeNumeros) {
+                    throw new IllegalArgumentException("A aposta nao contem o total de numeros necessarios, que eh de=" + tipoJogo.quantidadeNumeros + "e foi enviado=" + numeros.length);
                 }
-                aposta = new int[tipoJogo.numeros];
+                aposta = new int[tipoJogo.quantidadeNumeros];
                 for (int i = 0; i < numeros.length; i++) {
                     aposta[i] = Integer.parseInt(numeros[i]);
                 }
@@ -80,8 +80,8 @@ public class ApostaRepository {
                 if (line++ == 1) {
                     continue;
                 }
-                int[] jogo = new int[tipoJogo.numeros];
-                for (int col = 0; col < tipoJogo.numeros; col++) {
+                int[] jogo = new int[tipoJogo.quantidadeNumeros];
+                for (int col = 0; col < tipoJogo.quantidadeNumeros; col++) {
                     jogo[col] = (int) row.getCell(shift + col).getNumericCellValue();
                     if (tipoJogo == TipoJogo.LOTOMANIA && jogo[col] == 0) {
                         jogo[col] = 100;

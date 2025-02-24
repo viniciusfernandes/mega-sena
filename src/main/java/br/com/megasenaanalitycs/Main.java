@@ -118,12 +118,13 @@ public class Main {
     }
 
     private static void printFrequenciaUltimosSorteios() {
-        printNumeroPorFrequencia(apostaService.gerarUltimoBlocoFrequenciaSorteios(tipoJogo));
+        var frequencias = apostaService.gerarFrequenciasPorBloco(tipoJogo);
+        printNumeroPorFrequencia(frequencias.get(frequencias.size() - 1));
     }
 
     private static void printFrequenciaTodosSorteios() {
         var sorteios = apostaService.lerSorteiosAnteriores(tipoJogo);
-        var frequencias = apostaService.gerarFrequenciaSorteios(tipoJogo);
+        var frequencias = apostaService.gerarFrequenciasSorteio(tipoJogo);
         printFrequenciaPorSorteio(sorteios, frequencias);
     }
 
@@ -218,15 +219,14 @@ public class Main {
         System.out.println("\n*****************");
         System.out.println("Digite os numeros Sorteados");
         var sorteados = toNumeros(scanner.nextLine());
-        if (sorteados.length != tipoJogo.numeros) {
-            System.err.println("Você deve digitar apenas " + tipoJogo.numeros + " numeros!");
+        if (sorteados.length != tipoJogo.quantidadeNumeros) {
+            System.err.println("Você deve digitar apenas " + tipoJogo.quantidadeNumeros + " numeros!");
             return;
         }
         var apostadores = apostaService.lerApostadores(tipoJogo);
         var premiados = new HashMap<String, List<String>>();
-        var acertos = new int[tipoJogo.numeros + 1];
+        var acertos = new int[tipoJogo.quantidadeNumeros + 1];
         var dezenas = new HashSet<Integer>();
-        var frequencia = new FrequenciaNumeros(tipoJogo);
         for (var apostador : apostadores) {
             var melhorAcerto = apostador.verificarApostas(sorteados);
             var apostasEAcertos = apostador.getApostasEAcertos();
@@ -244,9 +244,6 @@ public class Main {
             } else if (melhorAcerto.totalAcerto() >= 6) {
                 addPermiado("sextina", melhorAcerto, premiados);
             }
-            for (var aposta : apostador.apostas) {
-                frequencia.addFRequencia(aposta);
-            }
         }
 
         System.out.println("\nDezenas acertadas => " + Utils.stringfy(dezenas.stream().mapToInt(Integer::intValue).toArray()));
@@ -261,7 +258,6 @@ public class Main {
         for (int i = 0; i < acertos.length; i++) {
             System.out.println("Total de apostas com \"" + i + "\" acertos=" + acertos[i]);
         }
-        frequencia.print();
     }
 
     private static void addPermiado(String premiacao, ApostaEAcerto acertoAposta, HashMap<String, List<String>> premiadosMap) {
@@ -283,21 +279,5 @@ public class Main {
         return numeros;
     }
 
-    private static class FrequenciaNumeros {
-        final int frequencia[];
 
-        private FrequenciaNumeros(TipoJogo tipoJogo) {
-            this.frequencia = new int[tipoJogo.total < 100 ? tipoJogo.total + 1 : tipoJogo.total];
-        }
-
-        public void addFRequencia(int[] aposta) {
-            for (int i = 0; i < aposta.length; i++) {
-                frequencia[aposta[i]] += 1;
-            }
-        }
-
-        public void print() {
-            Utils.printFrequenciaNumeros(frequencia);
-        }
-    }
 }

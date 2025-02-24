@@ -12,6 +12,6 @@ public class ApostaEAcerto {
     }
 
     public int totalAcerto() {
-        return acerto.size();
+        return acerto == null ? 0 : acerto.size();
     }
 }
