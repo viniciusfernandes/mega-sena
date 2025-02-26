@@ -1,25 +1,12 @@
 package br.com.megasenaanalitycs.utils;
 
-import br.com.megasenaanalitycs.domain.*;
+import br.com.megasenaanalitycs.domain.FrequenciasPorBloco;
 
 import java.util.List;
 
 import static br.com.megasenaanalitycs.utils.Utils.stringfy;
 
 public class EstatisticaUtils {
-    public static void printPorFrequenciaMaxima(int[] frequencias, int frequenciaLimite) {
-        var freq = new StringBuilder();
-        var num = new StringBuilder();
-        for (int i = 0; i < frequencias.length; i++) {
-            if (frequencias[i] <= frequenciaLimite) {
-                num.append(i + 1 <= 9 ? "0" + (i + 1) : i + 1).append(" ");
-                freq.append(frequencias[i] <= 9 ? "0" + frequencias[i] : frequencias[i]).append(" ");
-            }
-        }
-        num.append("\n").append(freq).append("\n");
-        Utils.print("Frequência dos Números Sorteados", num);
-    }
-
     public static void printPorFrequenciaMaxima(FrequenciasPorBloco frequenciasPorBloco, int frequenciaLimite) {
         var output = new StringBuilder();
         var header = new StringBuilder();
@@ -27,9 +14,9 @@ public class EstatisticaUtils {
         var frequencias = frequenciasPorBloco.frequencias;
         for (int i = 0; i < frequencias.length; i++) {
             var dezena = i + 1;
-             if (frequencias[i] <= frequenciaLimite) {
+            if (frequencias[i] <= frequenciaLimite) {
                 output
-                        .append(dezena<= 9 ? "0" + (dezena) : dezena).append(" ")
+                        .append(dezena <= 9 ? "0" + (dezena) : dezena).append(" ")
                         .append("    ").append(frequencias[i])
                         .append("     ")
                         .append(frequenciasPorBloco.posicoesNoBloco[i]).append("\n");
@@ -41,9 +28,6 @@ public class EstatisticaUtils {
         Utils.print("Frequência dos Números Sorteados", header);
     }
 
-    public static void printNumeroPorFrequencia(int[] frequencias) {
-        printPorFrequenciaMaxima(frequencias, 1000);
-    }
 
     public static void printNumeroPorFrequencia(FrequenciasPorBloco frequenciasPorBloco) {
         printPorFrequenciaMaxima(frequenciasPorBloco, 1000);
@@ -89,72 +73,5 @@ public class EstatisticaUtils {
             freq.delete(0, freq.length());
         }
         Utils.print("Frequência dos Últimos Sorteios", num);
-    }
-
-    public static void printFrequenciaSorteios(final List<int[]> frequencias) {
-        var saida = new StringBuilder();
-        for (int i = 0; i <= frequencias.size(); i++) {
-            saida.append("(").append(i + 1).append(") ");
-            saida.append(Utils.stringfy(frequencias.get(i)));
-            saida.append("\n");
-        }
-        Utils.print("Frequencia dos Sorteios", saida);
-    }
-
-
-    public static void printFrequenciaNumerosSorteados(List<int[]> sorteios, List<int[]> blocosFrequencias, int tamanhoBloco) {
-        int[] frequencias;
-        int[] numerosSorteados;
-        int idxNumero;
-        StringBuilder saida = new StringBuilder();
-        int idxPenultimoBloco = blocosFrequencias.size() - 2;
-        for (int idxBloco = 0, idxSort = tamanhoBloco; idxBloco <= idxPenultimoBloco; idxBloco++, idxSort++) {
-            frequencias = blocosFrequencias.get(idxBloco);
-            numerosSorteados = sorteios.get(idxSort);
-            saida.append("(").append(idxSort + 1).append(") ");
-            for (int i = 0; i < numerosSorteados.length; i++) {
-                idxNumero = numerosSorteados[i] - 1;
-                if (numerosSorteados[i] <= 9) {
-                    saida.append("0");
-                }
-                saida.append(numerosSorteados[i]).append("=").append(frequencias[idxNumero]).append(" ");
-            }
-            saida.append("\n");
-            int[] distribuicao = new int[20];
-            for (int i = 0; i < frequencias.length; i++) {
-                if (i < 9) {
-                    saida.append("0");
-                }
-                saida.append(i + 1).append("=").append(frequencias[i]).append(" ");
-                distribuicao[frequencias[i]]++;
-            }
-            saida.append("\n");
-            for (int i = 0; i < distribuicao.length; i++) {
-                saida.append(i).append("=").append(distribuicao[i]).append(" ");
-            }
-            saida.append("\n\n");
-        }
-        System.out.println(saida);
-    }
-
-    public static void gerarVelocidadesDistribuicoes(TipoJogo tipoJogo, List<int[]> distribuicoes) {
-        int[] distribuicaoAnterior = distribuicoes.get(0);
-        int[] distribuicao;
-        int[][] velocidades = new int[tipoJogo.maiorDezena][distribuicoes.size()];
-        int velocidade;
-        for (int idxDist = 1; idxDist < distribuicoes.size(); idxDist++) {
-            distribuicao = distribuicoes.get(idxDist);
-            for (int idxNumero = 0; idxNumero < distribuicao.length; idxNumero++) {
-                velocidade = distribuicao[idxNumero] - distribuicaoAnterior[idxNumero];
-                if (velocidade < 0) {
-                    velocidade = 0;
-                }
-                velocidades[idxNumero][idxDist] = velocidade;
-            }
-            distribuicaoAnterior = distribuicao;
-        }
-        for (int idxVel = 0; idxVel < velocidades.length; idxVel++) {
-            System.out.println("vel " + (idxVel + 1) + " => " + Utils.stringfy(velocidades[idxVel]));
-        }
     }
 }
