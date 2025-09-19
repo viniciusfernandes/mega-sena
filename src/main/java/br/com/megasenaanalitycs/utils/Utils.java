@@ -95,7 +95,4 @@ public class Utils {
         print(titulo, appender);
     }
 
-    public static void printSorteiosAnteriores(List<int[]> sorteios) {
-        print("SORTEIOS ANTERIORES", sorteios);
-    }
 }

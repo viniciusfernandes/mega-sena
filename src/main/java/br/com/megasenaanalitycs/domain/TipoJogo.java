@@ -1,7 +1,8 @@
 package br.com.megasenaanalitycs.domain;
 
 public enum TipoJogo {
-    MEGASENA(6, 60, 3, 3), LOTOMANIA(20, 100, 3, 3);
+    MEGASENA(6, 60, 3, 3),
+    LOTOMANIA(20, 100, 16, 3);
     public final int quantidadeNumeros;
     public final int maiorDezena;
     public final int ocorrenciaMaxima;

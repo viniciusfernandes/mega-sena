@@ -63,7 +63,7 @@ public class ApostaService {
         for (int numBloco = 1; numBloco <= totalBlocos; numBloco++) {
             int idxBloco = numBloco - 1;
             blocoSorteios = sorteios.subList(idxBloco, idxBloco + tamanhoBloco);
-            var frequenciaPorBloco = new FrequenciasPorBloco(numBloco, numBloco + tamanhoBloco -1, tipoJogo);
+            var frequenciaPorBloco = new FrequenciasPorBloco(numBloco, numBloco + tamanhoBloco - 1, tipoJogo);
             var posicaoNoBloco = 1;
             for (int[] sorteio : blocoSorteios) {
                 for (int i = 0; i < sorteio.length; i++) {
@@ -84,6 +84,10 @@ public class ApostaService {
 
     public void ordernarApostas(TipoJogo tipoJogo) throws IOException {
         apostaRepository.ordernarApostas(tipoJogo);
+    }
+
+    public void ordernar(List<int[]> apostas) {
+        apostas.forEach(Arrays::sort);
     }
 
     public List<String> validarHipoteseEstatistica(TipoJogo tipoJogo) {
@@ -108,17 +112,17 @@ public class ApostaService {
 
     public List<int[]> gerarApostas(TipoJogo tipoJogo, int numeroMaxTentativas) {
         var apostas = new ArrayList<int[]>();
-        var sorterios = lerSorteiosAnteriores(tipoJogo);
-        var ultimoSorteio = sorterios.get(sorterios.size() - 1);
-        var maxAcertos = 1;
+//        var sorterios = lerSorteiosAnteriores(tipoJogo);
+//        var ultimoSorteio = sorterios.get(sorterios.size() - 1);
+//        var maxAcertos = 1;
         var frequenciaSorteios = gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         while (numeroMaxTentativas-- >= 0) {
             var aposta = gerarAposta(tipoJogo);
-            if (isEstatisticaApostaValida(aposta, frequenciaSorteios, tipoJogo) &&
-                    conferirAcertos(aposta, ultimoSorteio) <= maxAcertos) {
+            if (isEstatisticaApostaValida(aposta, frequenciaSorteios, tipoJogo)) {
                 apostas.add(aposta);
             }
         }
+        ordernar(apostas);
         return apostas;
     }
 
