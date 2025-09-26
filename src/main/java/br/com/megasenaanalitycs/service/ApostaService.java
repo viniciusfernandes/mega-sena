@@ -86,7 +86,20 @@ public class ApostaService {
         apostaRepository.ordernarApostas(tipoJogo);
     }
 
-    public void ordernar(List<int[]> apostas) {
+    public void ordernarApostas(List<int[]> apostas) {
+        if (apostas == null || apostas.isEmpty()) {
+            return;
+        }
+        apostas.forEach(Arrays::sort);
+        apostas.sort((int[] a, int[] b) -> {
+            for (int i = 0; i < a.length; i++) {
+                if (a[i] == b[i]) {
+                    continue;
+                }
+                return Integer.compare(a[i], b[i]);
+            }
+            return 0;
+        });
         apostas.forEach(Arrays::sort);
     }
 
@@ -110,19 +123,25 @@ public class ApostaService {
         return mensagens;
     }
 
-    public List<int[]> gerarApostas(TipoJogo tipoJogo, int numeroMaxTentativas) {
+    public List<int[]> gerarApostas(TipoJogo tipoJogo, int quantidadeApostas) {
+        if (quantidadeApostas <= 0) {
+            return Collections.emptyList();
+        }
         var apostas = new ArrayList<int[]>();
-//        var sorterios = lerSorteiosAnteriores(tipoJogo);
-//        var ultimoSorteio = sorterios.get(sorterios.size() - 1);
-//        var maxAcertos = 1;
+        var sorterios = lerSorteiosAnteriores(tipoJogo);
+        var ultimoSorteio = sorterios.get(sorterios.size() - 1);
+        var maxAcertos = 4;
         var frequenciaSorteios = gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
-        while (numeroMaxTentativas-- >= 0) {
+        while (quantidadeApostas > 0) {
             var aposta = gerarAposta(tipoJogo);
-            if (isEstatisticaApostaValida(aposta, frequenciaSorteios, tipoJogo)) {
+            if (isEstatisticaApostaValida(aposta, frequenciaSorteios, tipoJogo) &&
+                    conferirAcertos(aposta, ultimoSorteio) <= maxAcertos) {
                 apostas.add(aposta);
+                quantidadeApostas--;
             }
         }
-        ordernar(apostas);
+        ordernarApostas(apostas);
+        apostaRepository.escreverApostas(apostas);
         return apostas;
     }
 

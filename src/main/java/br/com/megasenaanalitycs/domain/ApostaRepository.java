@@ -52,6 +52,19 @@ public class ApostaRepository {
         return apostadores;
     }
 
+    public void escreverApostas(List<int[]> apostas) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(apostasFile))) {
+            StringBuilder content = new StringBuilder();
+            content.append("Vinicius\n");
+            for (int[] aposta : apostas) {
+                content.append(Utils.stringfy(aposta)).append("\n");
+            }
+            writer.write(content.toString());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Erro ao manipular o arquivo de apostas.", e);
+        }
+    }
+
     public void ordernarApostas(TipoJogo tipoJogo) throws IOException {
         var apostadores = lerApostadores(tipoJogo);
         var conteudoApostas = new StringBuilder();
@@ -66,7 +79,6 @@ public class ApostaRepository {
         writer.write(conteudoApostas.toString());
         writer.close();
     }
-
 
 
     public List<int[]> lerSorteiosAnteriores(TipoJogo tipoJogo) {

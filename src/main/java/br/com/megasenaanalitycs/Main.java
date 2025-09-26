@@ -137,11 +137,11 @@ public class Main {
 
     private static void printApostasGeradas() {
         System.out.println("\n*****************");
-        System.out.println("Digite a quantidade de tentativas desejada");
+        System.out.println("Digite a quantidade de apostas desejada");
         option = scanner.nextLine();
-        var tentativas = Integer.parseInt(option);
-        var apostas = apostaService.gerarApostas(tipoJogo, tentativas);
-        Utils.print("Apostas Geradas", apostas);
+        var quantidadeApostas = Integer.parseInt(option);
+        var apostas = apostaService.gerarApostas(tipoJogo, quantidadeApostas);
+//        Utils.print("Apostas Geradas", apostas);
     }
 
     private static void printSorteiorAnteriores() {
@@ -230,9 +230,9 @@ public class Main {
         for (var apostador : apostadores) {
             var melhorAcerto = apostador.verificarApostas(sorteados);
             var apostasEAcertos = apostador.getApostasEAcertos();
-            System.out.println("\nApostador: " + apostador.nome);
+//            System.out.println("\nApostador: " + apostador.nome);
             for (var apostaEAcerto : apostasEAcertos) {
-                System.out.println(Utils.stringfy(apostaEAcerto.aposta) + " => " + apostaEAcerto.acerto.size() + " acertos => " + apostaEAcerto.acerto);
+//                System.out.println(Utils.stringfy(apostaEAcerto.aposta) + " => " + apostaEAcerto.acerto.size() + " acertos => " + apostaEAcerto.acerto);
                 acertos[apostaEAcerto.acerto.size()] += 1;
                 dezenas.addAll(apostaEAcerto.acerto);
             }
