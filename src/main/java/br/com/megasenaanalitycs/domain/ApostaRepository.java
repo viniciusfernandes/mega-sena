@@ -54,12 +54,12 @@ public class ApostaRepository {
 
     public void escreverApostas(List<int[]> apostas) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(apostasFile))) {
-            StringBuilder content = new StringBuilder();
-            content.append("Vinicius\n");
+            writer.write("Vinicius");
+            writer.newLine();
             for (int[] aposta : apostas) {
-                content.append(Utils.stringfy(aposta)).append("\n");
+                writer.write(Utils.stringfy(aposta));
+                writer.newLine();
             }
-            writer.write(content.toString());
         } catch (IOException e) {
             throw new UncheckedIOException("Erro ao manipular o arquivo de apostas.", e);
         }
