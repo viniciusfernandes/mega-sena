@@ -37,7 +37,7 @@ public class ApostaService {
             if (frequencias[aposta[i] - 1] >= tipoJogo.frequenciaMaxima) {
                 count++;
             }
-            if (count >= tipoJogo.ocorrenciaMaxima) {
+            if (count > tipoJogo.ocorrenciaMaxima) {
                 return false;
             }
         }
@@ -130,7 +130,7 @@ public class ApostaService {
         var apostas = new ArrayList<int[]>();
         var sorterios = lerSorteiosAnteriores(tipoJogo);
         var ultimoSorteio = sorterios.get(sorterios.size() - 1);
-        var maxAcertos = 4;
+        var maxAcertos = tipoJogo.ocorrenciaMaxima;
         var frequenciaSorteios = gerarUltimoBlocoFrequenciaSorteios(tipoJogo);
         while (quantidadeApostas > 0) {
             var aposta = gerarAposta(tipoJogo);
@@ -148,7 +148,7 @@ public class ApostaService {
     public int conferirAcertos(int[] aposta, int[] sorteio) {
         int acertos = 0;
         for (int idxApt = 0; idxApt < aposta.length; idxApt++) {
-            for (int idxSort = 0; idxSort < aposta.length; idxSort++) {
+            for (int idxSort = 0; idxSort < sorteio.length; idxSort++) {
                 if (aposta[idxApt] == sorteio[idxSort]) {
                     acertos++;
                     break;
@@ -215,7 +215,7 @@ public class ApostaService {
     }
 
     private int[] gerarAposta(TipoJogo tipoJogo) {
-        var aposta = new int[tipoJogo.quantidadeNumeros];
+        var aposta = new int[tipoJogo.quantidadeNumerosApostados];
         var indexSorteados = new boolean[tipoJogo.maiorDezena];
         int num;
         int index = 0;
@@ -226,7 +226,7 @@ public class ApostaService {
             }
             indexSorteados[num] = true;
             aposta[index++] = num + 1;
-        } while (index < tipoJogo.quantidadeNumeros);
+        } while (index < tipoJogo.quantidadeNumerosApostados);
         return aposta;
     }
 

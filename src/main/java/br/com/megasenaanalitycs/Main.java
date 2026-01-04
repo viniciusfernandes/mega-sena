@@ -219,20 +219,19 @@ public class Main {
         System.out.println("\n*****************");
         System.out.println("Digite os numeros Sorteados");
         var sorteados = toNumeros(scanner.nextLine());
-        if (sorteados.length != tipoJogo.quantidadeNumeros) {
-            System.err.println("Você deve digitar apenas " + tipoJogo.quantidadeNumeros + " numeros!");
+        if (sorteados.length != tipoJogo.quantidadeNumerosSorteados) {
+            System.err.println("Você deve digitar apenas " + tipoJogo.quantidadeNumerosSorteados + " numeros!");
             return;
         }
         var apostadores = apostaService.lerApostadores(tipoJogo);
         var premiados = new HashMap<String, List<String>>();
-        var acertos = new int[tipoJogo.quantidadeNumeros + 1];
+        var acertos = new int[tipoJogo.quantidadeNumerosSorteados + 1];
         var dezenas = new HashSet<Integer>();
         for (var apostador : apostadores) {
             var melhorAcerto = apostador.verificarApostas(sorteados);
             var apostasEAcertos = apostador.getApostasEAcertos();
-//            System.out.println("\nApostador: " + apostador.nome);
+            System.out.println("\nApostador: " + apostador.nome);
             for (var apostaEAcerto : apostasEAcertos) {
-//                System.out.println(Utils.stringfy(apostaEAcerto.aposta) + " => " + apostaEAcerto.acerto.size() + " acertos => " + apostaEAcerto.acerto);
                 acertos[apostaEAcerto.acerto.size()] += 1;
                 dezenas.addAll(apostaEAcerto.acerto);
             }
@@ -246,7 +245,6 @@ public class Main {
             }
         }
 
-        System.out.println("\nDezenas acertadas => " + Utils.stringfy(dezenas.stream().mapToInt(Integer::intValue).toArray()));
         System.out.println("\n****** PREMIACAO ******");
         premiados.forEach((premiacao, listaPremiados) -> {
             System.out.println("******" + premiacao + "******");

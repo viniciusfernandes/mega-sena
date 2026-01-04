@@ -16,10 +16,8 @@ public class ApostaRepository {
         var reader = new BufferedReader(new FileReader(apostasFile));
         String line;
         var apostadores = new ArrayList<Apostador>();
-        String[] numeros;
         int lineNum = 0;
         Apostador apostador = null;
-        int[] aposta;
         while ((line = reader.readLine()) != null) {
 
             lineNum++;
@@ -32,16 +30,7 @@ public class ApostaRepository {
                     apostadores.add(apostador);
                     continue;
                 }
-                numeros = line.split(" ");
-                if (numeros.length != tipoJogo.quantidadeNumeros) {
-                    throw new IllegalArgumentException("A aposta nao contem o total de numeros necessarios, que eh de=" + tipoJogo.quantidadeNumeros + "e foi enviado=" + numeros.length);
-                }
-                aposta = new int[tipoJogo.quantidadeNumeros];
-                for (int i = 0; i < numeros.length; i++) {
-                    aposta[i] = Integer.parseInt(numeros[i]);
-                }
-                Arrays.sort(aposta);
-                apostador.addAposta(aposta);
+                apostador.addAposta(toAposta(line));
             } catch (Exception e) {
                 System.err.println("Falha na linha " + lineNum + " => " + line);
                 e.printStackTrace();
@@ -50,6 +39,16 @@ public class ApostaRepository {
         }
         reader.close();
         return apostadores;
+    }
+
+    private int [] toAposta(String line ){
+        String [] numeros = line.split(" ");
+        int[] aposta = new int[numeros.length];
+        for (int i = 0; i < numeros.length; i++) {
+            aposta[i] = Integer.parseInt(numeros[i]);
+        }
+        Arrays.sort(aposta);
+        return aposta;
     }
 
     public void escreverApostas(List<int[]> apostas) {
@@ -92,8 +91,8 @@ public class ApostaRepository {
                 if (line++ == 1) {
                     continue;
                 }
-                int[] jogo = new int[tipoJogo.quantidadeNumeros];
-                for (int col = 0; col < tipoJogo.quantidadeNumeros; col++) {
+                int[] jogo = new int[tipoJogo.quantidadeNumerosSorteados];
+                for (int col = 0; col < tipoJogo.quantidadeNumerosSorteados; col++) {
                     jogo[col] = (int) row.getCell(shift + col).getNumericCellValue();
                     if (tipoJogo == TipoJogo.LOTOMANIA && jogo[col] == 0) {
                         jogo[col] = 100;
