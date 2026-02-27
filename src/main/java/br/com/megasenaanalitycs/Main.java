@@ -141,7 +141,7 @@ public class Main {
         option = scanner.nextLine();
         var quantidadeApostas = Integer.parseInt(option);
         var apostas = apostaService.gerarApostas(tipoJogo, quantidadeApostas);
-//        Utils.print("Apostas Geradas", apostas);
+        Utils.print("Apostas Geradas", apostas);
     }
 
     private static void printSorteiorAnteriores() {
